@@ -161,7 +161,155 @@ class QuantDeskVisualizer {
         if (this.ws && this.ws.readyState === WebSocket.OPEN) {
             this.ws.send(JSON.stringify(payload));
         } else {
-            console.warn("[QuantDesk] WebSocket not open. Command queued or ignored:", payload);
+            // Standalone Client-Side Execution (e.g. GitHub Pages static deployment)
+            this.processStandaloneCommand(payload);
+        }
+    }
+
+    processStandaloneCommand(payload) {
+        const cmd = payload.command;
+        if (cmd === "RAW_LINE") {
+            this.processStandaloneLine(payload.line);
+        } else if (cmd === "BATCH") {
+            const lines = payload.lines || [];
+            for (const l of lines) {
+                this.processStandaloneLine(l);
+            }
+        } else if (cmd === "RESET" || cmd === "CLEAR") {
+            this.bids = [];
+            this.asks = [];
+            this.recentTape = [];
+            this.totalIngested = 0;
+            this.totalProcessed = 0;
+            this.render();
+        } else if (cmd === "LOAD_EXAMPLE") {
+            const exName = payload.name;
+            const examples = {
+                aapl: [
+                    "A,1001,B,224.95,500", "A,1002,B,224.96,800", "A,1003,B,224.97,1200",
+                    "A,1004,B,224.98,2500", "A,1005,B,224.99,3400", "A,1006,S,225.00,3100",
+                    "A,1007,S,225.01,2200", "A,1008,S,225.02,1500", "A,1009,S,225.03,900",
+                    "A,1010,S,225.04,600", "A,1011,B,224.99,1500", "A,1012,S,225.00,1000",
+                    "X,1001,0,0,0", "E,1006,0,225.00,500", "A,1013,B,224.98,750", "A,1014,S,225.01,850"
+                ],
+                nvda: [
+                    "A,2001,B,124.95,1000", "A,2002,B,124.96,1500", "A,2003,B,124.97,2000",
+                    "A,2004,B,124.98,3500", "A,2005,B,124.99,5000", "A,2006,S,125.00,4500",
+                    "A,2007,S,125.01,3000", "A,2008,S,125.02,2500", "A,2009,S,125.03,1800",
+                    "A,2010,S,125.04,1200", "A,2011,B,124.99,2200", "E,2006,0,125.00,1500",
+                    "X,2002,0,0,0", "A,2012,S,125.00,2000", "E,2005,0,124.99,1000",
+                    "X,2008,0,0,1000", "A,2013,B,124.98,1800", "A,2014,S,125.01,1500",
+                    "E,2006,0,125.00,3000", "A,2015,B,125.00,2500"
+                ],
+                sweep: [
+                    "A,3001,B,99.95,500", "A,3002,B,99.98,1000", "A,3003,B,99.99,1500",
+                    "A,3004,S,100.00,800", "A,3005,S,100.01,1200", "A,3006,S,100.02,2000",
+                    "E,3004,0,100.00,800", "A,3007,B,100.00,1000", "E,3005,0,100.01,500"
+                ]
+            };
+            const dataset = examples[exName] || [];
+            for (const l of dataset) {
+                this.processStandaloneLine(l);
+            }
+        }
+        this.render();
+    }
+
+    processStandaloneLine(line) {
+        if (!line || line.startsWith('#') || line.startsWith('//')) return;
+        const parts = line.split(/[,\s]+/).filter(Boolean);
+        if (parts.length === 0) return;
+
+        let idx = (parts[0].toUpperCase() === "ORDER") ? 1 : 0;
+        if (idx >= parts.length) return;
+
+        const type = parts[idx++].toUpperCase();
+        const nowNs = Math.floor(performance.now() * 1000000);
+        this.totalIngested++;
+        this.totalProcessed++;
+
+        if (type === 'A' && parts.length - idx >= 4) {
+            const orderId = parseInt(parts[idx++], 10);
+            const side = parts[idx++].toUpperCase();
+            let pStr = parts[idx++];
+            let price = pStr.includes('.') ? Math.round(parseFloat(pStr) * 100) : parseInt(pStr, 10);
+            const qty = parseInt(parts[idx++], 10);
+
+            const targetList = (side === 'B') ? this.bids : this.asks;
+            let found = false;
+            for (let lvl of targetList) {
+                if (lvl.price === price) {
+                    lvl.qty += qty;
+                    lvl.orders += 1;
+                    lvl.active = true;
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                targetList.push({ price, qty, orders: 1, active: true });
+            }
+            if (side === 'B') {
+                this.bids.sort((a, b) => b.price - a.price);
+            } else {
+                this.asks.sort((a, b) => a.price - b.price);
+            }
+
+            this.recentTape.unshift({
+                type: 'A',
+                seqNo: this.userSeqNo++,
+                ts: nowNs,
+                orderId,
+                side,
+                price,
+                qty
+            });
+        } else if (type === 'X' && parts.length - idx >= 1) {
+            const orderId = parseInt(parts[idx++], 10);
+            this.recentTape.unshift({
+                type: 'X',
+                seqNo: this.userSeqNo++,
+                ts: nowNs,
+                orderId,
+                side: 'X',
+                price: 0,
+                qty: 0
+            });
+        } else if (type === 'E' && parts.length - idx >= 2) {
+            const orderId = parseInt(parts[idx++], 10);
+            let pStr = (parts.length - idx >= 2) ? parts[idx++] : "100.00";
+            let price = pStr.includes('.') ? Math.round(parseFloat(pStr) * 100) : parseInt(pStr, 10);
+            const qty = parseInt(parts[idx++], 10);
+
+            this.recentTape.unshift({
+                type: 'E',
+                seqNo: this.userSeqNo++,
+                ts: nowNs,
+                orderId,
+                side: 'E',
+                price,
+                qty
+            });
+        }
+
+        if (this.recentTape.length > 30) this.recentTape.pop();
+        if (this.bids.length > 5) this.bids.length = 5;
+        if (this.asks.length > 5) this.asks.length = 5;
+
+        // Update Analytics
+        const bestBid = this.bids[0] ? this.bids[0].price : 0;
+        const bestAsk = this.asks[0] ? this.asks[0].price : 0;
+        const spread = (bestBid > 0 && bestAsk > 0) ? (bestAsk - bestBid) : 0;
+        const mid = (bestBid > 0 && bestAsk > 0) ? Math.round((bestAsk + bestBid) / 2) : (bestBid || bestAsk || 0);
+
+        if (this.elSpread) this.elSpread.textContent = `$${(spread / 100).toFixed(2)}`;
+        if (this.elMid) this.elMid.textContent = `$${(mid / 100).toFixed(2)}`;
+        if (this.elMicro) this.elMicro.textContent = `$${(mid / 100).toFixed(3)}`;
+        if (this.elBboBadge) {
+            this.elBboBadge.textContent = (bestBid > 0 && bestAsk > 0) ? `${spread} TICKS ($${(spread / 100).toFixed(2)})` : "PARTIAL BOOK";
+        }
+        if (this.elTotalIngested) {
+            this.elTotalIngested.innerHTML = `${this.totalProcessed.toLocaleString()} <small>pkts</small>`;
         }
     }
 
