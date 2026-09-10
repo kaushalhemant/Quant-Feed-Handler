@@ -1,0 +1,13 @@
+# Type,OrderId,Side,Price,Quantity
+# Order Book Sweep Scenario
+A,3001,B,99.95,500
+A,3002,B,99.98,1000
+A,3003,B,99.99,1500
+A,3004,S,100.00,800
+A,3005,S,100.01,1200
+A,3006,S,100.02,2000
+# Aggressive Buy cross matches best ask at 100.00
+E,3004,0,100.00,800
+# Next level becomes best ask at 100.01
+A,3007,B,100.00,1000
+E,3005,0,100.01,500

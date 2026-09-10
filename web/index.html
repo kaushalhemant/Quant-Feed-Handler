@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QuantDesk | Ultra-Low Latency Market Data & Limit Order Book Visualizer</title>
+    <meta name="description" content="Institutional HFT Market Data Feed Handler & Level 2 Limit Order Book Real-Time User Data Ingestion Visualizer">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="dark-theme">
+    <!-- Top Global Status Bar -->
+    <header class="terminal-header">
+        <div class="logo-cluster">
+            <div class="status-pulse-ring">
+                <span class="status-dot"></span>
+            </div>
+            <div class="logo-text">
+                <h1>QUANT<span class="highlight">DESK</span> <span class="badge-hft">LOB-C++20</span></h1>
+                <p class="subtitle">100% USER-DRIVEN FEED HANDLER & LIMIT ORDER BOOK ENGINE</p>
+            </div>
+        </div>
+
+        <div class="global-metrics">
+            <div class="metric-card session-card" id="session-card">
+                <span class="metric-label">SESSION TOKEN</span>
+                <div class="session-token-wrapper">
+                    <span class="metric-value text-cyan" id="session-token-val">QUANT-USER-MODE</span>
+                    <button id="btn-copy-token" class="btn-icon-only" title="Copy Session Token">📋</button>
+                </div>
+            </div>
+            <div class="metric-card">
+                <span class="metric-label">ENGINE CORE</span>
+                <span class="metric-value status-online" id="engine-status">ONLINE (HOT-PATH)</span>
+            </div>
+            <div class="metric-card">
+                <span class="metric-label">TOTAL INGESTED</span>
+                <span class="metric-value" id="total-ingested-val">0 <small>pkts</small></span>
+            </div>
+            <div class="metric-card">
+                <span class="metric-label">MEDIAN LATENCY (p50)</span>
+                <span class="metric-value text-cyan" id="p50-val">0.0 <small>ns</small></span>
+            </div>
+            <div class="metric-card">
+                <span class="metric-label">TAIL LATENCY (p99)</span>
+                <span class="metric-value text-purple" id="p99-val">0.0 <small>ns</small></span>
+            </div>
+        </div>
+
+        <div class="header-actions">
+            <button id="btn-reset-book" class="btn btn-danger" title="Clear all orders in book and reset sequence">
+                <span class="btn-icon">🔄</span> CLEAR / RESET BOOK
+            </button>
+            <button id="btn-export-book" class="btn btn-secondary" title="Export current L2 book state as CSV">
+                <span class="btn-icon">💾</span> EXPORT BOOK
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Workspace Grid -->
+    <main class="dashboard-grid">
+        
+        <!-- Left Column: Level 2 Limit Order Book (LOB) Ladder -->
+        <section class="panel lob-panel">
+            <div class="panel-header">
+                <div class="panel-title">
+                    <span class="icon">📊</span>
+                    <h2>LEVEL 2 LIMIT ORDER BOOK (LOB)</h2>
+                </div>
+                <div class="stock-watchlist-bar">
+                    <select id="stock-selector" class="stock-select">
+                        <option value="CUSTOM">USER DATA STREAM (Custom Ingest)</option>
+                        <option value="AAPL">AAPL - Apple Inc ($225.00)</option>
+                        <option value="NVDA">NVDA - NVIDIA Corp ($125.00)</option>
+                        <option value="MSFT">MSFT - Microsoft Corp ($415.00)</option>
+                        <option value="BTCUSD">BTC/USD - Bitcoin Spot ($65,000.00)</option>
+                    </select>
+                </div>
+                <div class="book-summary-tags">
+                    <span class="tag tag-spread">SPREAD: <strong id="lbl-spread">$0.00</strong></span>
+                    <span class="tag tag-mid">MID: <strong id="lbl-mid">$0.00</strong></span>
+                    <span class="tag tag-micro">MICRO: <strong id="lbl-micro">$0.00</strong></span>
+                </div>
+            </div>
+
+            <div class="lob-container">
+                <!-- Asks Table (Sorted Ascending, Top of Book at bottom) -->
+                <div class="lob-half asks-half">
+                    <div class="lob-table-header">
+                        <span>ORDERS</span>
+                        <span>QTY</span>
+                        <span>CUMULATIVE</span>
+                        <span class="text-right">ASK PRICE ($)</span>
+                    </div>
+                    <div class="lob-rows" id="asks-rows">
+                        <div class="empty-book-hint">Waiting for user ask orders...</div>
+                    </div>
+                </div>
+
+                <!-- Spread Bar / BBO Separator -->
+                <div class="bbo-separator">
+                    <div class="bbo-indicator">
+                        <span class="bbo-label">BEST BID-OFFER (BBO) SPREAD</span>
+                        <span class="bbo-spread-badge" id="bbo-spread-badge">BOOK EMPTY</span>
+                    </div>
+                    <div class="imbalance-meter">
+                        <span class="imbalance-label">ORDER FLOW IMBALANCE (OFI)</span>
+                        <div class="imbalance-bar-container">
+                            <div class="imbalance-fill-bid" id="ofi-bid-bar" style="width: 50%;"></div>
+                            <div class="imbalance-fill-ask" id="ofi-ask-bar" style="width: 50%;"></div>
+                        </div>
+                        <div class="imbalance-values">
+                            <span id="ofi-bid-pct">50.0% Bids</span>
+                            <span id="ofi-ask-pct">50.0% Asks</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bids Table (Sorted Descending, Top of Book at top) -->
+                <div class="lob-half bids-half">
+                    <div class="lob-table-header">
+                        <span>BID PRICE ($)</span>
+                        <span>CUMULATIVE</span>
+                        <span>QTY</span>
+                        <span class="text-right">ORDERS</span>
+                    </div>
+                    <div class="lob-rows" id="bids-rows">
+                        <div class="empty-book-hint">Waiting for user bid orders...</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Center Column: Visual Market Depth Chart & Time/Sales Tape -->
+        <section class="panel center-panel">
+            <!-- Market Depth Visualization -->
+            <div class="sub-panel depth-chart-subpanel">
+                <div class="panel-header">
+                    <div class="panel-title">
+                        <span class="icon">📈</span>
+                        <h2>CUMULATIVE MARKET DEPTH CURVE</h2>
+                    </div>
+                    <div class="depth-stats">
+                        <span>TOTAL BID VOL: <b id="total-bid-vol">0</b></span>
+                        <span>TOTAL ASK VOL: <b id="total-ask-vol">0</b></span>
+                    </div>
+                </div>
+                <div class="depth-canvas-wrapper">
+                    <canvas id="depth-chart-canvas"></canvas>
+                </div>
+            </div>
+
+            <!-- Real-Time Time & Sales (ITCH Protocol Packet Stream) -->
+            <div class="sub-panel tape-subpanel">
+                <div class="panel-header">
+                    <div class="panel-title">
+                        <span class="icon">⚡</span>
+                        <h2>USER ITCH PROTOCOL WIRE TAPE</h2>
+                    </div>
+                    <span class="badge-live" id="tape-status-badge">USER INGESTION ACTIVE</span>
+                </div>
+                <div class="tape-table-header">
+                    <span>TYPE</span>
+                    <span>SEQ NO</span>
+                    <span>TIMESTAMP (NS)</span>
+                    <span>ORDER ID</span>
+                    <span>SIDE</span>
+                    <span>PRICE</span>
+                    <span class="text-right">QUANTITY</span>
+                </div>
+                <div class="tape-stream" id="tape-stream">
+                    <div class="empty-tape-hint">No messages processed yet. Insert orders using the panel on the right.</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Right Column: User Ingestion Deck & Diagnostic Suite -->
+        <section class="panel right-panel">
+            
+            <!-- User Ingestion Center with Tabs -->
+            <div class="sub-panel ingestion-subpanel">
+                <div class="panel-header">
+                    <div class="panel-title">
+                        <span class="icon">📥</span>
+                        <h2>USER DATA INGESTION CENTER</h2>
+                    </div>
+                </div>
+
+                <!-- Ingestion Tabs -->
+                <div class="ingestion-tabs">
+                    <button class="tab-btn active" data-tab="tab-manual">Manual Order</button>
+                    <button class="tab-btn" data-tab="tab-batch">File / CSV Batch</button>
+                    <button class="tab-btn" data-tab="tab-examples">Example Datasets</button>
+                </div>
+
+                <!-- Tab 1: Manual Order Placement -->
+                <div class="tab-content active" id="tab-manual">
+                    <form id="form-manual-order" class="order-form">
+                        <div class="form-row action-row">
+                            <label class="radio-pill active">
+                                <input type="radio" name="order-action" value="A" checked> Add Order ('A')
+                            </label>
+                            <label class="radio-pill">
+                                <input type="radio" name="order-action" value="X"> Cancel ('X')
+                            </label>
+                            <label class="radio-pill">
+                                <input type="radio" name="order-action" value="E"> Execute ('E')
+                            </label>
+                        </div>
+
+                        <div class="form-grid">
+                            <div class="form-group" id="grp-side">
+                                <label for="inp-order-side">SIDE</label>
+                                <select id="inp-order-side" class="form-control">
+                                    <option value="B">BUY (Bid)</option>
+                                    <option value="S">SELL (Ask)</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="inp-order-id">ORDER ID</label>
+                                <input type="number" id="inp-order-id" class="form-control" value="1001" min="1" required>
+                            </div>
+
+                            <div class="form-group" id="grp-price">
+                                <label for="inp-order-price">PRICE ($)</label>
+                                <input type="number" id="inp-order-price" class="form-control" value="100.00" step="0.01" min="0.01" required>
+                            </div>
+
+                            <div class="form-group" id="grp-qty">
+                                <label for="inp-order-qty">QUANTITY (SHARES)</label>
+                                <input type="number" id="inp-order-qty" class="form-control" value="500" min="1" required>
+                            </div>
+                        </div>
+
+                        <button type="submit" id="btn-submit-order" class="btn btn-primary btn-block">
+                            <span class="btn-icon">⚡</span> SUBMIT TO C++ ENGINE
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Tab 2: File Upload & Batch CSV/JSON Ingestion -->
+                <div class="tab-content" id="tab-batch">
+                    <div class="batch-upload-box">
+                        <div class="file-dropzone" id="file-dropzone">
+                            <span class="drop-icon">📁</span>
+                            <span>Drop CSV / TXT / JSON data file or click to browse</span>
+                            <input type="file" id="file-input" accept=".csv,.txt,.json,.dat" class="hidden-file-input">
+                        </div>
+
+                        <div class="batch-textarea-wrapper">
+                            <label for="txt-batch-input">OR PASTE RAW ORDER STREAM (CSV FORMAT):</label>
+                            <textarea id="txt-batch-input" rows="5" class="batch-textarea" placeholder="A,1001,B,224.95,500&#10;A,1002,B,224.96,800&#10;A,1003,S,225.00,1200&#10;X,1001,0,0,0&#10;E,1003,0,225.00,500"></textarea>
+                        </div>
+
+                        <div class="batch-actions-row">
+                            <button id="btn-ingest-batch" class="btn btn-primary">
+                                <span class="btn-icon">🚀</span> INGEST BATCH TO ENGINE
+                            </button>
+                            <button id="btn-clear-batch-txt" class="btn btn-outline">
+                                CLEAR
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab 3: Curated Example Datasets -->
+                <div class="tab-content" id="tab-examples">
+                    <div class="examples-list">
+                        <p class="examples-intro">Select a realistic institutional dataset to explore the engine:</p>
+                        
+                        <div class="example-card">
+                            <div class="example-info">
+                                <strong>AAPL L2 Limit Order Book</strong>
+                                <small>16 msgs: Clean 5-level Bid/Ask book build + trade</small>
+                            </div>
+                            <button class="btn btn-sm btn-outline btn-load-example" data-example="aapl">LOAD AAPL</button>
+                        </div>
+
+                        <div class="example-card">
+                            <div class="example-info">
+                                <strong>NVDA High-Activity Order Flow</strong>
+                                <small>20 msgs: Active flow with Adds, Cancels & Sweeps</small>
+                            </div>
+                            <button class="btn btn-sm btn-outline btn-load-example" data-example="nvda">LOAD NVDA</button>
+                        </div>
+
+                        <div class="example-card">
+                            <div class="example-info">
+                                <strong>Market Cross & Spread Sweep</strong>
+                                <small>10 msgs: Order matching & top of book sweep</small>
+                            </div>
+                            <button class="btn btn-sm btn-outline btn-load-example" data-example="sweep">LOAD SWEEP</button>
+                        </div>
+
+                        <div class="example-card">
+                            <div class="example-info">
+                                <strong>100,000 Pkts Benchmark Burst</strong>
+                                <small>High-speed microsecond stress test (Core 0 to Core 1)</small>
+                            </div>
+                            <button class="btn btn-sm btn-secondary" id="btn-run-burst-100k">RUN 100K BURST</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Nanosecond Latency Profile -->
+            <div class="sub-panel latency-subpanel">
+                <div class="panel-header">
+                    <div class="panel-title">
+                        <span class="icon">⏱️</span>
+                        <h2>WIRE-TO-BOOK LATENCY METRICS</h2>
+                    </div>
+                </div>
+                <div class="latency-grid">
+                    <div class="latency-cell">
+                        <span class="cell-label">MIN</span>
+                        <span class="cell-val text-green" id="lat-min">0.0 ns</span>
+                    </div>
+                    <div class="latency-cell">
+                        <span class="cell-label">MEAN</span>
+                        <span class="cell-val" id="lat-mean">0.0 ns</span>
+                    </div>
+                    <div class="latency-cell">
+                        <span class="cell-label">50.0th (p50)</span>
+                        <span class="cell-val text-cyan" id="lat-p50">0.0 ns</span>
+                    </div>
+                    <div class="latency-cell">
+                        <span class="cell-label">90.0th (p90)</span>
+                        <span class="cell-val" id="lat-p90">0.0 ns</span>
+                    </div>
+                    <div class="latency-cell">
+                        <span class="cell-label">99.0th (p99)</span>
+                        <span class="cell-val text-purple" id="lat-p99">0.0 ns</span>
+                    </div>
+                    <div class="latency-cell">
+                        <span class="cell-label">99.9th (p99.9)</span>
+                        <span class="cell-val text-yellow" id="lat-p999">0.0 ns</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Hardware Topology & Zero-Lock SPSC -->
+            <div class="sub-panel hardware-subpanel">
+                <div class="panel-header">
+                    <div class="panel-title">
+                        <span class="icon">🖥️</span>
+                        <h2>HARDWARE ARCHITECTURE</h2>
+                    </div>
+                </div>
+                <div class="hardware-topology">
+                    <div class="core-box core-0">
+                        <div class="core-tag">CORE 0 (INGESTION)</div>
+                        <div class="core-stat">User Ingest / Socket</div>
+                        <div class="core-status">PINNED & ACQUIRE</div>
+                    </div>
+                    <div class="spsc-link">
+                        <span class="spsc-badge">SPSC RING BUFFER (alignas(64))</span>
+                        <div class="spsc-flow-animation"></div>
+                        <span class="spsc-capacity">65,536 slots | Lock-Free std::atomic</span>
+                    </div>
+                    <div class="core-box core-1">
+                        <div class="core-tag">CORE 1 (ENGINE)</div>
+                        <div class="core-stat">OrderBook & Hash Table</div>
+                        <div class="core-status">PINNED & RELEASE</div>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- Footer Terminal Bar -->
+    <footer class="terminal-footer">
+        <div class="footer-item">
+            <span class="key">MODE:</span> <span class="val text-cyan">100% User Data Ingestion</span>
+        </div>
+        <div class="footer-item">
+            <span class="key">PROTOCOL:</span> <span class="val">ITCH Binary Wire Packets</span>
+        </div>
+        <div class="footer-item">
+            <span class="key">LOOKUP:</span> <span class="val">Fibonacci Hash Table (O(1))</span>
+        </div>
+        <div class="footer-item">
+            <span class="key">ENGINE:</span> <span class="val">C++20 Zero-Allocation LOB</span>
+        </div>
+        <div class="footer-item time-item">
+            <span id="live-clock">00:00:00.000 UTC</span>
+        </div>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>
