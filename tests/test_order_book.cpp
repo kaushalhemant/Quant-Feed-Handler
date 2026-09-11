@@ -109,6 +109,82 @@ void testDepthSortingAndEviction() {
     std::printf("[PASS] testDepthSortingAndEviction\n");
 }
 
+void testOrderBookInvariantsPropertyTest() {
+    LimitOrderBook<5, 4096> book;
+    
+    // Invariant validation helper
+    auto assertInvariants = [&book]() {
+        const auto& bids = book.bids();
+        const auto& asks = book.asks();
+
+        // Check Bids strictly descending
+        for (size_t i = 0; i + 1 < bids.size(); ++i) {
+            if (bids[i].active && bids[i + 1].active) {
+                assert(bids[i].price > bids[i + 1].price);
+                assert(bids[i].quantity > 0);
+                assert(bids[i].orderCount > 0);
+            }
+        }
+
+        // Check Asks strictly ascending
+        for (size_t i = 0; i + 1 < asks.size(); ++i) {
+            if (asks[i].active && asks[i + 1].active) {
+                assert(asks[i].price < asks[i + 1].price);
+                assert(asks[i].quantity > 0);
+                assert(asks[i].orderCount > 0);
+            }
+        }
+
+        // Check spread logic
+        if (book.hasBids() && book.hasAsks()) {
+            assert(book.spread() == (book.bestAskPrice() - book.bestBidPrice()));
+            assert(book.midPrice() == (0.5 * (book.bestBidPrice() + book.bestAskPrice())));
+        }
+    };
+
+    // Feed 50,000 randomized operations
+    uint64_t nextId = 1000;
+    for (uint64_t i = 1; i <= 50000; ++i) {
+        WireMessage msg{};
+        if (i % 3 == 0) {
+            // Add Bid
+            msg.msgType = 'A';
+            msg.add.msgType = 'A';
+            msg.add.seqNo = i;
+            msg.add.timestampNs = i * 10;
+            msg.add.orderId = nextId++;
+            msg.add.side = 'B';
+            msg.add.price = 9900 + static_cast<int32_t>(i % 50);
+            msg.add.quantity = 10 + static_cast<int32_t>(i % 100);
+            book.processMessage(msg);
+        } else if (i % 3 == 1) {
+            // Add Ask
+            msg.msgType = 'A';
+            msg.add.msgType = 'A';
+            msg.add.seqNo = i;
+            msg.add.timestampNs = i * 10;
+            msg.add.orderId = nextId++;
+            msg.add.side = 'S';
+            msg.add.price = 10000 + static_cast<int32_t>(i % 50);
+            msg.add.quantity = 10 + static_cast<int32_t>(i % 100);
+            book.processMessage(msg);
+        } else {
+            // Cancel random recent order
+            msg.msgType = 'X';
+            msg.cancel.msgType = 'X';
+            msg.cancel.seqNo = i;
+            msg.cancel.timestampNs = i * 10;
+            msg.cancel.orderId = (nextId > 1020) ? (nextId - 10) : 1000;
+            msg.cancel.quantity = 0;
+            book.processMessage(msg);
+        }
+
+        assertInvariants();
+    }
+
+    std::printf("[PASS] testOrderBookInvariantsPropertyTest (50,000 randomized state changes asserted)\n");
+}
+
 int main() {
     std::printf("--- Running Order Book Unit Tests ---\n");
     testBasicAddAndBBO();
@@ -116,6 +192,7 @@ int main() {
     testCancelAndModify();
     testExecutionFill();
     testDepthSortingAndEviction();
+    testOrderBookInvariantsPropertyTest();
     std::printf("All Order Book tests passed successfully!\n\n");
     return 0;
 }

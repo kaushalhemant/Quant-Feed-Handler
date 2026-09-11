@@ -1,0 +1,42 @@
+groups:
+  - name: quantdesk_sla_alerts
+    rules:
+      - alert: HighTailLatencyP99
+        expr: feed_handler_latency_nanoseconds_p99 > 2500
+        for: 1m
+        labels:
+          severity: warning
+          component: feed_handler
+        annotations:
+          summary: "99th percentile processing latency breach"
+          description: "QuantDesk p99 tail latency exceeded 2.5 microseconds (Current: {{ $value }}ns) for over 1 minute."
+
+      - alert: CriticalTailLatencyP99
+        expr: feed_handler_latency_nanoseconds_p99 > 10000
+        for: 30s
+        labels:
+          severity: critical
+          component: feed_handler
+        annotations:
+          summary: "Severe tail latency spike"
+          description: "QuantDesk p99 tail latency spiked above 10 microseconds (Current: {{ $value }}ns)."
+
+      - alert: SequenceGapRateHigh
+        expr: increase(feed_handler_sequence_gaps_total[1m]) > 5
+        for: 30s
+        labels:
+          severity: critical
+          component: network_ingestion
+        annotations:
+          summary: "Multicast packet sequence gap detected"
+          description: "Over 5 sequence gaps detected in the last minute. Network packet drop occurring on feed lines."
+
+      - alert: FeedHandlerThroughputStalled
+        expr: feed_handler_throughput_msgs_per_sec == 0 and feed_handler_messages_total > 0
+        for: 2m
+        labels:
+          severity: warning
+          component: engine_pipeline
+        annotations:
+          summary: "Market data stream paused or stalled"
+          description: "Zero throughput reported by feed handler for more than 2 minutes."

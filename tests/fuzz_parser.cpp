@@ -60,19 +60,22 @@ void testFuzzWithRandomBytes() {
 void testValidMsgParsing() {
     AddOrderMsg validAdd{'A', 100, 1234567, 9999, 'B', 10500, 50};
     WireMessage msg{};
-    auto res = WireParserValidator::validateAndParse(reinterpret_cast<const char*>(&validAdd), sizeof(validAdd), msg);
+    const auto res = WireParserValidator::validateAndParse(reinterpret_cast<const char*>(&validAdd), sizeof(validAdd), msg);
     assert(res == WireParserValidator::ValidationResult::Valid);
     assert(msg.add.orderId == 9999);
     assert(msg.add.price == 10500);
+    (void)res;
 
     // Test truncated packet
-    auto truncatedRes = WireParserValidator::validateAndParse(reinterpret_cast<const char*>(&validAdd), sizeof(validAdd) - 5, msg);
+    const auto truncatedRes = WireParserValidator::validateAndParse(reinterpret_cast<const char*>(&validAdd), sizeof(validAdd) - 5, msg);
     assert(truncatedRes == WireParserValidator::ValidationResult::LengthMismatch);
+    (void)truncatedRes;
 
     // Test invalid side
     validAdd.side = 'Z';
-    auto invalidSideRes = WireParserValidator::validateAndParse(reinterpret_cast<const char*>(&validAdd), sizeof(validAdd), msg);
+    const auto invalidSideRes = WireParserValidator::validateAndParse(reinterpret_cast<const char*>(&validAdd), sizeof(validAdd), msg);
     assert(invalidSideRes == WireParserValidator::ValidationResult::InvalidSide);
+    (void)invalidSideRes;
 
     std::printf("[PASS] testValidMsgParsing\n");
 }

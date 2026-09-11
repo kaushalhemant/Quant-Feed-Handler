@@ -88,6 +88,10 @@ union WireMessage {
         return add.timestampNs;
     }
 
+    [[nodiscard]] constexpr uint64_t orderId() const noexcept {
+        return add.orderId;
+    }
+
     /**
      * @brief Computes expected wire struct size based on msgType.
      * @return Expected size in bytes, or 0 if unknown type.
@@ -99,6 +103,20 @@ union WireMessage {
             case 'E': return sizeof(ExecuteOrderMsg);
             default:  return 0;
         }
+    }
+
+    /**
+     * @brief Validates if this wire message holds valid memory invariants.
+     */
+    [[nodiscard]] constexpr bool isValid() const noexcept {
+        if (msgType == 'A') {
+            return (add.side == 'B' || add.side == 'S') && (add.price > 0) && (add.quantity > 0);
+        } else if (msgType == 'X') {
+            return (cancel.quantity >= 0);
+        } else if (msgType == 'E') {
+            return (exec.execQuantity > 0) && (exec.matchPrice > 0);
+        }
+        return false;
     }
 };
 static_assert(sizeof(WireMessage) == sizeof(AddOrderMsg), "WireMessage size mismatch");

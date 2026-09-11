@@ -17,6 +17,8 @@ class QuantDeskVisualizer {
         this.isLiveConnected = false;
         this.ws = null;
         this.wsReconnectTimeout = null;
+        this.reconnectAttempts = 0;
+        this.isColorblind = false;
 
         this.initDOM();
         this.initCanvas();
@@ -49,6 +51,10 @@ class QuantDeskVisualizer {
         this.elP50Val = document.getElementById('p50-val');
         this.elP99Val = document.getElementById('p99-val');
         this.elClock = document.getElementById('live-clock');
+
+        this.elReconnectBanner = document.getElementById('reconnect-banner');
+        this.elReconnectMsg = document.getElementById('reconnect-msg');
+        this.btnColorblind = document.getElementById('btn-colorblind-mode');
 
         // Latency grid elements
         this.elLatMin = document.getElementById('lat-min');
@@ -116,6 +122,8 @@ class QuantDeskVisualizer {
 
             this.ws.onopen = () => {
                 this.isLiveConnected = true;
+                this.reconnectAttempts = 0;
+                if (this.elReconnectBanner) this.elReconnectBanner.classList.add('hidden');
                 this.elEngineStatus.textContent = "LIVE C++20 CORE (CONNECTED)";
                 this.elEngineStatus.className = "metric-value status-online";
                 if (this.elTapeBadge) this.elTapeBadge.textContent = "USER INGESTION ACTIVE";
@@ -135,7 +143,7 @@ class QuantDeskVisualizer {
 
             this.ws.onclose = () => {
                 this.isLiveConnected = false;
-                this.elEngineStatus.textContent = "STANDBY / OFFLINE";
+                this.elEngineStatus.textContent = "STANDBY / RECONNECTING...";
                 this.elEngineStatus.className = "metric-value text-yellow";
                 this.scheduleReconnect();
             };
@@ -152,9 +160,17 @@ class QuantDeskVisualizer {
 
     scheduleReconnect() {
         if (this.wsReconnectTimeout) clearTimeout(this.wsReconnectTimeout);
+        this.reconnectAttempts++;
+        const delay = Math.min(10000, Math.floor(1000 * Math.pow(1.5, Math.min(this.reconnectAttempts, 8))));
+
+        if (this.elReconnectBanner && this.elReconnectMsg) {
+            this.elReconnectBanner.classList.remove('hidden');
+            this.elReconnectMsg.textContent = `WebSocket connection lost. Retrying in ${(delay / 1000).toFixed(1)}s (Attempt #${this.reconnectAttempts})...`;
+        }
+
         this.wsReconnectTimeout = setTimeout(() => {
             this.connectWebSocket();
-        }, 2000);
+        }, delay);
     }
 
     sendBridgeCommand(payload) {
@@ -451,6 +467,16 @@ class QuantDeskVisualizer {
         if (this.btnExport) {
             this.btnExport.addEventListener('click', () => this.exportBookState());
         }
+
+        // Colorblind / Accessible Mode Toggle
+        if (this.btnColorblind) {
+            this.btnColorblind.addEventListener('click', () => {
+                this.isColorblind = !this.isColorblind;
+                document.body.classList.toggle('colorblind-theme', this.isColorblind);
+                this.btnColorblind.classList.toggle('active', this.isColorblind);
+                this.render();
+            });
+        }
     }
 
     handleDataFile(file) {
@@ -689,7 +715,11 @@ class QuantDeskVisualizer {
 
         const maxVol = Math.max(maxBidVol, maxAskVol, 100);
 
-        // Draw Bids Curve (Left half: Green)
+        // Draw Bids Curve (Left half: Green or Accessible Blue)
+        const bidStroke = this.isColorblind ? "#2196f3" : "#00e676";
+        const bidFillTop = this.isColorblind ? "rgba(33, 150, 243, 0.4)" : "rgba(0, 230, 118, 0.35)";
+        const bidFillBot = this.isColorblind ? "rgba(33, 150, 243, 0.02)" : "rgba(0, 230, 118, 0.02)";
+
         if (bidPoints.length > 0) {
             this.ctx.beginPath();
             this.ctx.moveTo(midX, height);
@@ -702,17 +732,21 @@ class QuantDeskVisualizer {
             this.ctx.closePath();
 
             const gradBid = this.ctx.createLinearGradient(0, 0, 0, height);
-            gradBid.addColorStop(0, "rgba(0, 230, 118, 0.35)");
-            gradBid.addColorStop(1, "rgba(0, 230, 118, 0.02)");
+            gradBid.addColorStop(0, bidFillTop);
+            gradBid.addColorStop(1, bidFillBot);
             this.ctx.fillStyle = gradBid;
             this.ctx.fill();
 
-            this.ctx.strokeStyle = "#00e676";
+            this.ctx.strokeStyle = bidStroke;
             this.ctx.lineWidth = 2;
             this.ctx.stroke();
         }
 
-        // Draw Asks Curve (Right half: Red)
+        // Draw Asks Curve (Right half: Red or Accessible Amber)
+        const askStroke = this.isColorblind ? "#ff9800" : "#ff1744";
+        const askFillTop = this.isColorblind ? "rgba(255, 152, 0, 0.4)" : "rgba(255, 23, 68, 0.35)";
+        const askFillBot = this.isColorblind ? "rgba(255, 152, 0, 0.02)" : "rgba(255, 23, 68, 0.02)";
+
         if (askPoints.length > 0) {
             this.ctx.beginPath();
             this.ctx.moveTo(midX, height);
@@ -725,12 +759,12 @@ class QuantDeskVisualizer {
             this.ctx.closePath();
 
             const gradAsk = this.ctx.createLinearGradient(0, 0, 0, height);
-            gradAsk.addColorStop(0, "rgba(255, 23, 68, 0.35)");
-            gradAsk.addColorStop(1, "rgba(255, 23, 68, 0.02)");
+            gradAsk.addColorStop(0, askFillTop);
+            gradAsk.addColorStop(1, askFillBot);
             this.ctx.fillStyle = gradAsk;
             this.ctx.fill();
 
-            this.ctx.strokeStyle = "#ff1744";
+            this.ctx.strokeStyle = askStroke;
             this.ctx.lineWidth = 2;
             this.ctx.stroke();
         }

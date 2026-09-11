@@ -1,0 +1,146 @@
+{
+  "annotations": {
+    "list": []
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "id": null,
+  "links": [],
+  "liveNow": true,
+  "panels": [
+    {
+      "collapsed": false,
+      "gridPos": { "h": 6, "w": 6, "x": 0, "y": 0 },
+      "id": 1,
+      "title": "Median Ingestion Latency (p50)",
+      "type": "stat",
+      "targets": [
+        {
+          "expr": "feed_handler_latency_nanoseconds_p50",
+          "legendFormat": "p50 Latency"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ns",
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 500 },
+              { "color": "red", "value": 1500 }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 6, "w": 6, "x": 6, "y": 0 },
+      "id": 2,
+      "title": "Tail Ingestion Latency (p99)",
+      "type": "stat",
+      "targets": [
+        {
+          "expr": "feed_handler_latency_nanoseconds_p99",
+          "legendFormat": "p99 Latency"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ns",
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "purple", "value": null },
+              { "color": "yellow", "value": 1000 },
+              { "color": "red", "value": 3000 }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 6, "w": 6, "x": 12, "y": 0 },
+      "id": 3,
+      "title": "Throughput (msgs/sec)",
+      "type": "stat",
+      "targets": [
+        {
+          "expr": "feed_handler_throughput_msgs_per_sec",
+          "legendFormat": "Throughput"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": { "mode": "palette-classic" }
+        }
+      }
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 6, "w": 6, "x": 18, "y": 0 },
+      "id": 4,
+      "title": "Sequence Gaps Detected",
+      "type": "stat",
+      "targets": [
+        {
+          "expr": "feed_handler_sequence_gaps_total",
+          "legendFormat": "Sequence Gaps"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "red", "value": 1 }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 9, "w": 12, "x": 0, "y": 6 },
+      "id": 5,
+      "title": "Wire-to-Book Latency Percentiles (p50 / p90 / p99 / p99.9)",
+      "type": "timeseries",
+      "targets": [
+        { "expr": "feed_handler_latency_nanoseconds_p50", "legendFormat": "p50 (Median)" },
+        { "expr": "feed_handler_latency_nanoseconds_p90", "legendFormat": "p90" },
+        { "expr": "feed_handler_latency_nanoseconds_p99", "legendFormat": "p99 (Tail)" },
+        { "expr": "feed_handler_latency_nanoseconds_p999", "legendFormat": "p99.9" }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ns"
+        }
+      }
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 9, "w": 12, "x": 12, "y": 6 },
+      "id": 6,
+      "title": "Cumulative Message Rate & Fill Executions",
+      "type": "timeseries",
+      "targets": [
+        { "expr": "rate(feed_handler_messages_total[1m])", "legendFormat": "Ingestion Rate (/sec)" },
+        { "expr": "rate(feed_handler_trades_executed_total[1m])", "legendFormat": "Trade Execution Rate (/sec)" }
+      ]
+    }
+  ],
+  "schemaVersion": 38,
+  "style": "dark",
+  "tags": ["hft", "quantdesk", "orderbook", "low-latency"],
+  "time": { "from": "now-15m", "to": "now" },
+  "title": "QuantDesk HFT Order Book Engine Telemetry",
+  "uid": "quantdesk-telemetry"
+}

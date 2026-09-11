@@ -30,7 +30,16 @@ Testing/
 __pycache__/
 *.pyc
 *.pyo
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# WAL and runtime logs
+*.wal
+wal_journal.bin
+test_wal.bin
 
 # OS
 .DS_Store
 Thumbs.db
+

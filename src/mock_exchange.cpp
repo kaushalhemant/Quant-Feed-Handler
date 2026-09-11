@@ -78,7 +78,7 @@ int main(int argc, char* argv[]) {
     uint64_t nextOrderId = 1;
     uint64_t seqNo = 1;
 
-    std::printf("[Publisher] Streaming %'zu market data packets...\n", totalPackets);
+    std::printf("[Publisher] Streaming %zu market data packets...\n", totalPackets);
     const auto startTime = std::chrono::high_resolution_clock::now();
 
     for (size_t i = 0; i < totalPackets; ++i) {
@@ -143,7 +143,7 @@ int main(int argc, char* argv[]) {
 
     std::printf("[Publisher] Broadcast complete!\n");
     std::printf("  Elapsed Time : %.2f ms\n", elapsedMs);
-    std::printf("  Transmit Rate: %'.0f packets/sec\n\n", rate);
+    std::printf("  Transmit Rate: %.0f packets/sec\n\n", rate);
 
 #if defined(_WIN32) || defined(_WIN64)
     closesocket(sock);

@@ -1,0 +1,22 @@
+[Unit]
+Description=QuantDesk C++20 HFT Feed Handler Engine
+After=network.target
+Documentation=https://github.com/kaushalhemant/Quant-Feed-Handler
+
+[Service]
+Type=simple
+User=quantdesk
+Group=quantdesk
+WorkingDirectory=/opt/quantdesk
+ExecStart=/opt/quantdesk/bin/stream_server
+Restart=always
+RestartSec=2s
+LimitNOFILE=65536
+LimitMEMLOCK=infinity
+CPUAffinity=0 1
+Nice=-20
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

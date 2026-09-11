@@ -12,8 +12,9 @@ void testWALPersistenceAndRecovery() {
     // Step 1: Open WAL file and append 500 binary market records
     {
         WALJournal wal;
-        bool opened = wal.open(walPath, 1024 * 1024); // 1 MB test WAL
+        const bool opened = wal.open(walPath, 1024 * 1024); // 1 MB test WAL
         assert(opened);
+        (void)opened;
 
         for (uint64_t i = 1; i <= 500; ++i) {
             WireMessage msg{};
@@ -23,9 +24,11 @@ void testWALPersistenceAndRecovery() {
             msg.add.timestampNs = i * 100ULL;
             msg.add.orderId = 1000 + i;
             msg.add.side = (i % 2 == 0) ? 'B' : 'S';
-            msg.add.price = 10000 + (i % 10);
+            msg.add.price = 10000 + static_cast<int32_t>(i % 10);
             msg.add.quantity = 50;
-            assert(wal.append(msg));
+            const bool ok = wal.append(msg);
+            assert(ok);
+            (void)ok;
         }
 
         assert(wal.recordCount() == 500);
@@ -35,13 +38,15 @@ void testWALPersistenceAndRecovery() {
     // Step 2: Simulate process recovery by reopening WAL file and replaying into LimitOrderBook
     {
         WALJournal walRecovery;
-        bool reopened = walRecovery.open(walPath, 1024 * 1024);
+        const bool reopened = walRecovery.open(walPath, 1024 * 1024);
         assert(reopened);
+        (void)reopened;
         assert(walRecovery.recordCount() == 500);
 
         LimitOrderBook<5, 4096> recoveredBook;
-        size_t replayed = walRecovery.recover(recoveredBook);
+        const size_t replayed = walRecovery.recover(recoveredBook);
         assert(replayed == 500);
+        (void)replayed;
         assert(recoveredBook.totalMessagesProcessed() == 500);
         assert(recoveredBook.hasBids());
         assert(recoveredBook.hasAsks());

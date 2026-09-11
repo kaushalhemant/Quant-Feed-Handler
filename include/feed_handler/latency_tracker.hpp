@@ -96,9 +96,9 @@ public:
         std::fprintf(out, "\n=================================================================\n");
         std::fprintf(out, "               HFT BENCHMARK & LATENCY PROFILE                   \n");
         std::fprintf(out, "=================================================================\n");
-        std::fprintf(out, "  Total Packets Ingested : %'zu\n", samplesNs_.size());
+        std::fprintf(out, "  Total Packets Ingested : %zu\n", samplesNs_.size());
         std::fprintf(out, "  Total Wall Time        : %.3f ms\n", totalWallTimeMs);
-        std::fprintf(out, "  Effective Throughput   : %'.0f msgs/sec\n", throughput);
+        std::fprintf(out, "  Effective Throughput   : %.0f msgs/sec\n", throughput);
         std::fprintf(out, "-----------------------------------------------------------------\n");
         std::fprintf(out, "  Latency Distribution   : (Nanoseconds per message)\n");
         std::fprintf(out, "    Min Latency          : %8.2f ns\n", minNs());

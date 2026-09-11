@@ -1219,3 +1219,76 @@ input[type="range"]::-webkit-slider-thumb {
     font-size: 12px;
     font-style: italic;
 }
+
+/* ==========================================================================
+   Accessible Colorblind Theme (Deuteranopia / Protanopia Safe)
+   ========================================================================== */
+body.colorblind-theme {
+    --color-bid: #2196f3;           /* High-contrast blue for Bids */
+    --color-bid-bg: rgba(33, 150, 243, 0.16);
+    --color-bid-glow: rgba(33, 150, 243, 0.4);
+
+    --color-ask: #ff9800;           /* High-contrast amber/orange for Asks */
+    --color-ask-bg: rgba(255, 152, 0, 0.16);
+    --color-ask-glow: rgba(255, 152, 0, 0.4);
+}
+
+/* ==========================================================================
+   WebSocket Reconnecting Banner
+   ========================================================================== */
+.reconnect-banner {
+    background: linear-gradient(90deg, rgba(255, 152, 0, 0.25), rgba(255, 87, 34, 0.25));
+    border-bottom: 1px solid var(--color-orange);
+    color: #fff;
+    padding: 8px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-size: 12px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.reconnect-banner.hidden {
+    display: none;
+}
+
+.pulse-warning {
+    animation: blinkWarning 1s infinite;
+}
+
+@keyframes blinkWarning {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+}
+
+/* ==========================================================================
+   Responsive Breakpoints (Desktop -> Tablet -> Mobile)
+   ========================================================================== */
+@media (max-width: 1200px) {
+    .dashboard-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+    .right-panel {
+        grid-column: span 2;
+    }
+}
+
+@media (max-width: 768px) {
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+        height: auto;
+    }
+    .right-panel, .center-panel, .lob-panel {
+        grid-column: span 1;
+    }
+    .terminal-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    .global-metrics {
+        flex-wrap: wrap;
+    }
+}

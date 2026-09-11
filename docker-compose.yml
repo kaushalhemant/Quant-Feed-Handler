@@ -1,0 +1,85 @@
+version: '3.8'
+
+services:
+  engine:
+    build:
+      context: .
+      dockerfile: Dockerfile.engine
+    image: quantdesk/engine:1.1.0
+    container_name: quantdesk-engine
+    restart: unless-stopped
+    ports:
+      - "9090:9090" # Prometheus metrics and health check
+    environment:
+      - QUANTDESK_METRICS_PORT=9090
+      - QUANTDESK_LOB_DEPTH=5
+      - QUANTDESK_AFFINITY_CORE0=0
+      - QUANTDESK_AFFINITY_CORE1=1
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9090/healthz"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+    volumes:
+      - wal-data:/data/wal
+
+  bridge:
+    build:
+      context: .
+      dockerfile: Dockerfile.bridge
+    image: quantdesk/bridge:1.1.0
+    container_name: quantdesk-bridge
+    restart: unless-stopped
+    depends_on:
+      engine:
+        condition: service_healthy
+    ports:
+      - "8080:8080" # Web UI / HTTP Static Server
+      - "8765:8765" # WebSocket Telemetry Bridge
+    environment:
+      - QUANTDESK_HTTP_PORT=8080
+      - QUANTDESK_WS_PORT=8765
+      - QUANTDESK_ENGINE_CMD=./build/stream_server
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8080/healthz').close()"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+
+  prometheus:
+    image: prom/prometheus:v2.48.0
+    container_name: quantdesk-prometheus
+    restart: unless-stopped
+    ports:
+      - "9091:9090"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./prometheus/alerts.yml:/etc/prometheus/alerts.yml:ro
+      - prometheus-data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+
+  grafana:
+    image: grafana/grafana:10.2.0
+    container_name: quantdesk-grafana
+    restart: unless-stopped
+    depends_on:
+      - prometheus
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - grafana-data:/var/lib/grafana
+
+volumes:
+  wal-data:
+  prometheus-data:
+  grafana-data:

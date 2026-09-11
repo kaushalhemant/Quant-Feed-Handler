@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: quantdesk-config
+  labels:
+    app.kubernetes.io/name: quantdesk
+    app.kubernetes.io/part-of: quantdesk-platform
+data:
+  QUANTDESK_HTTP_PORT: "8080"
+  QUANTDESK_WS_PORT: "8765"
+  QUANTDESK_METRICS_PORT: "9090"
+  QUANTDESK_LOB_DEPTH: "5"
+  QUANTDESK_AFFINITY_CORE0: "0"
+  QUANTDESK_AFFINITY_CORE1: "1"

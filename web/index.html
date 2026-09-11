@@ -50,17 +50,26 @@
         </div>
 
         <div class="header-actions">
-            <button id="btn-reset-book" class="btn btn-danger" title="Clear all orders in book and reset sequence">
+            <button id="btn-colorblind-mode" class="btn btn-outline" title="Toggle Accessible / Colorblind Mode" aria-label="Toggle Colorblind Mode">
+                <span class="btn-icon">👁️</span> ACCESSIBLE THEME
+            </button>
+            <button id="btn-reset-book" class="btn btn-danger" title="Clear all orders in book and reset sequence" aria-label="Clear or Reset Book">
                 <span class="btn-icon">🔄</span> CLEAR / RESET BOOK
             </button>
-            <button id="btn-export-book" class="btn btn-secondary" title="Export current L2 book state as CSV">
+            <button id="btn-export-book" class="btn btn-secondary" title="Export current L2 book state as CSV" aria-label="Export Book to CSV">
                 <span class="btn-icon">💾</span> EXPORT BOOK
             </button>
         </div>
     </header>
 
+    <!-- WebSocket Reconnecting Notification Banner -->
+    <div id="reconnect-banner" class="reconnect-banner hidden" role="alert">
+        <span class="pulse-warning">⚠️</span>
+        <span id="reconnect-msg">Reconnecting to C++ Limit Order Book bridge...</span>
+    </div>
+
     <!-- Main Workspace Grid -->
-    <main class="dashboard-grid">
+    <main class="dashboard-grid" role="main">
         
         <!-- Left Column: Level 2 Limit Order Book (LOB) Ladder -->
         <section class="panel lob-panel">

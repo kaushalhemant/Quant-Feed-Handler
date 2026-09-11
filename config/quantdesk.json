@@ -1,0 +1,28 @@
+{
+  "server": {
+    "http_port": 8080,
+    "ws_port": 8765,
+    "metrics_port": 9090,
+    "host": "0.0.0.0"
+  },
+  "engine": {
+    "ring_buffer_capacity": 65536,
+    "lob_depth": 5,
+    "order_table_capacity": 2097152,
+    "socket_rcvbuf_bytes": 8388608,
+    "affinity": {
+      "producer_core": 0,
+      "consumer_core": 1
+    }
+  },
+  "security": {
+    "session_token": "QUANT-USER-MODE",
+    "rate_limit_hz": 500.0,
+    "rate_limit_burst": 1000,
+    "max_batch_lines": 50000
+  },
+  "telemetry": {
+    "snapshot_fps": 20,
+    "rolling_latency_window": 200000
+  }
+}

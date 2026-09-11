@@ -1,0 +1,17 @@
+# Doxyfile for QuantDesk C++20 HFT Feed Handler
+PROJECT_NAME           = "QuantDesk"
+PROJECT_NUMBER         = "1.1.0"
+PROJECT_BRIEF          = "Ultra-Low Latency Market Data Feed Handler & Limit Order Book Engine in C++20"
+OUTPUT_DIRECTORY       = "docs"
+CREATE_SUBDIRS         = NO
+OUTPUT_LANGUAGE        = English
+INPUT                  = include/feed_handler src
+RECURSIVE              = YES
+FILE_PATTERNS          = *.hpp *.cpp *.h
+EXTRACT_ALL            = YES
+EXTRACT_PRIVATE        = NO
+EXTRACT_STATIC         = YES
+GENERATE_HTML          = YES
+GENERATE_LATEX         = NO
+HAVE_DOT               = NO
+WARN_IF_UNDOCUMENTED   = NO

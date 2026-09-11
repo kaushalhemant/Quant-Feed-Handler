@@ -1,0 +1,23 @@
+[Unit]
+Description=QuantDesk Python WebSocket & HTTP UI Bridge
+After=network.target quantdesk-engine.service
+Requires=quantdesk-engine.service
+Documentation=https://github.com/kaushalhemant/Quant-Feed-Handler
+
+[Service]
+Type=simple
+User=quantdesk
+Group=quantdesk
+WorkingDirectory=/opt/quantdesk
+Environment=QUANTDESK_HTTP_PORT=8080
+Environment=QUANTDESK_WS_PORT=8765
+Environment=QUANTDESK_METRICS_PORT=9090
+ExecStart=/usr/bin/python3 /opt/quantdesk/bridge.py
+Restart=always
+RestartSec=3s
+LimitNOFILE=65536
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

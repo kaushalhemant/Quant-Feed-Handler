@@ -40,6 +40,8 @@ public:
 
     void clear() noexcept {
         table_.fill(OrderRecord{});
+        occupiedCount_ = 0;
+        activeCount_ = 0;
     }
 
     /**
@@ -69,14 +71,19 @@ public:
                 slot.timestamp = ts;
                 slot.occupied  = true;
                 slot.cancelled = false;
+                ++occupiedCount_;
+                ++activeCount_;
                 return &slot;
             } else if (slot.orderId == orderId) {
                 // Re-activate or overwrite existing ID
+                if (slot.cancelled) {
+                    slot.cancelled = false;
+                    ++activeCount_;
+                }
                 slot.side      = side;
                 slot.price     = price;
                 slot.quantity  = quantity;
                 slot.timestamp = ts;
-                slot.cancelled = false;
                 return &slot;
             }
         }
@@ -117,12 +124,39 @@ public:
         return nullptr;
     }
 
+    /**
+     * @brief Marks an order as cancelled / tombstoned.
+     */
+    bool erase(uint64_t orderId) noexcept {
+        OrderRecord* rec = lookup(orderId);
+        if (rec != nullptr && !rec->cancelled) {
+            rec->cancelled = true;
+            if (activeCount_ > 0) --activeCount_;
+            return true;
+        }
+        return false;
+    }
+
+    [[nodiscard]] size_t size() const noexcept {
+        return activeCount_;
+    }
+
+    [[nodiscard]] size_t occupiedSlots() const noexcept {
+        return occupiedCount_;
+    }
+
+    [[nodiscard]] double loadFactor() const noexcept {
+        return static_cast<double>(occupiedCount_) / static_cast<double>(Capacity);
+    }
+
     [[nodiscard]] static constexpr size_t capacity() noexcept {
         return Capacity;
     }
 
 private:
     alignas(64) std::array<OrderRecord, Capacity> table_{};
+    size_t occupiedCount_ = 0;
+    size_t activeCount_ = 0;
 };
 
 } // namespace hft

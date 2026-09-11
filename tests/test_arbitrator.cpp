@@ -14,16 +14,18 @@ void testArbitratorDeduplication() {
 
     WireMessage outMsg{};
     // First arrival from Feed A -> Should be accepted
-    bool ok1 = arbitrator.ingest(DualFeedArbitrator<256>::FeedSource::FeedA, m1, outMsg);
+    const bool ok1 = arbitrator.ingest(DualFeedArbitrator<256>::FeedSource::FeedA, m1, outMsg);
     assert(ok1);
     assert(outMsg.seqNo() == 1);
     assert(arbitrator.expectedSeqNo() == 2);
 
     // Duplicate arrival from Feed B -> Should be dropped as duplicate
-    bool ok2 = arbitrator.ingest(DualFeedArbitrator<256>::FeedSource::FeedB, m1, outMsg);
+    const bool ok2 = arbitrator.ingest(DualFeedArbitrator<256>::FeedSource::FeedB, m1, outMsg);
     assert(!ok2);
     assert(arbitrator.duplicatesDropped() == 1);
 
+    (void)ok1;
+    (void)ok2;
     std::printf("[PASS] testArbitratorDeduplication\n");
 }
 
@@ -43,22 +45,25 @@ void testArbitratorOutofOrderGapRecovery() {
     assert(arbitrator.ingest(DualFeedArbitrator<256>::FeedSource::FeedA, m1, outMsg));
 
     // Sequence 3 arrives early (Sequence 2 missing -> Gap detected)
-    bool ok3 = arbitrator.ingest(DualFeedArbitrator<256>::FeedSource::FeedA, m3, outMsg);
+    const bool ok3 = arbitrator.ingest(DualFeedArbitrator<256>::FeedSource::FeedA, m3, outMsg);
     assert(!ok3); // Buffered
     assert(arbitrator.sequenceGapsDetected() >= 1);
     assert(arbitrator.retransmitRequests() == 1);
 
     // Sequence 2 arrives later
-    bool ok2 = arbitrator.ingest(DualFeedArbitrator<256>::FeedSource::FeedB, m2, outMsg);
+    const bool ok2 = arbitrator.ingest(DualFeedArbitrator<256>::FeedSource::FeedB, m2, outMsg);
     assert(ok2);
     assert(outMsg.seqNo() == 2);
 
     // Now drain buffered sequence 3
-    bool drained3 = arbitrator.tryDrainBuffered(outMsg);
+    const bool drained3 = arbitrator.tryDrainBuffered(outMsg);
     assert(drained3);
     assert(outMsg.seqNo() == 3);
     assert(arbitrator.expectedSeqNo() == 4);
 
+    (void)ok3;
+    (void)ok2;
+    (void)drained3;
     std::printf("[PASS] testArbitratorOutofOrderGapRecovery\n");
 }
 

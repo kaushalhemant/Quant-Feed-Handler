@@ -280,6 +280,7 @@ void snapshotThreadFunc() {
         // Calculate latency percentiles
         double minNs = 0.0, meanNs = 0.0, p50 = 0.0, p90 = 0.0, p95 = 0.0, p99 = 0.0, p999 = 0.0, maxNs = 0.0;
         std::vector<int64_t> latCopy;
+        PrometheusExporter::MetricsData metrics{};
 
         {
             std::lock_guard<std::mutex> lock(g_latencyMutex);
@@ -307,9 +308,23 @@ void snapshotThreadFunc() {
             p95 = getPct(95.0);
             p99 = getPct(99.0);
             p999 = getPct(99.9);
+            // Compute histogram buckets
+            for (auto ns : latCopy) {
+                if (ns <= 100) metrics.bucket_100ns++;
+                if (ns <= 250) metrics.bucket_250ns++;
+                if (ns <= 500) metrics.bucket_500ns++;
+                if (ns <= 1000) metrics.bucket_1us++;
+                if (ns <= 2500) metrics.bucket_2_5us++;
+                if (ns <= 5000) metrics.bucket_5us++;
+                if (ns <= 10000) metrics.bucket_10us++;
+                if (ns <= 25000) metrics.bucket_25us++;
+                if (ns <= 50000) metrics.bucket_50us++;
+                if (ns <= 100000) metrics.bucket_100us++;
+                metrics.bucket_inf++;
+                metrics.latency_sum_ns += static_cast<double>(ns);
+            }
         }
 
-        PrometheusExporter::MetricsData metrics{};
         metrics.totalIngested = g_totalIngested.load(std::memory_order_relaxed);
         metrics.totalProcessed = currentProcessed;
         metrics.sequenceGaps = g_orderBook.sequenceGapsDetected();
