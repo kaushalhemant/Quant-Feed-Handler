@@ -477,6 +477,34 @@ class QuantDeskVisualizer {
                 this.render();
             });
         }
+
+        // Reconnect Banner Controls
+        const btnRetry = document.getElementById('btn-banner-retry');
+        if (btnRetry) {
+            btnRetry.addEventListener('click', () => {
+                if (this.wsReconnectTimeout) clearTimeout(this.wsReconnectTimeout);
+                this.connectWebSocket();
+            });
+        }
+
+        const btnStandalone = document.getElementById('btn-banner-standalone');
+        if (btnStandalone) {
+            btnStandalone.addEventListener('click', () => {
+                if (this.wsReconnectTimeout) clearTimeout(this.wsReconnectTimeout);
+                if (this.elReconnectBanner) this.elReconnectBanner.classList.add('hidden');
+                this.standaloneMode = true;
+                this.elEngineStatus.textContent = "IN-BROWSER STANDALONE (ACTIVE)";
+                this.elEngineStatus.className = "metric-value text-cyan";
+                if (this.elTapeBadge) this.elTapeBadge.textContent = "IN-BROWSER INGESTION";
+            });
+        }
+
+        const btnDismiss = document.getElementById('btn-banner-dismiss');
+        if (btnDismiss) {
+            btnDismiss.addEventListener('click', () => {
+                if (this.elReconnectBanner) this.elReconnectBanner.classList.add('hidden');
+            });
+        }
     }
 
     handleDataFile(file) {

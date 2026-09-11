@@ -66,6 +66,11 @@
     <div id="reconnect-banner" class="reconnect-banner hidden" role="alert">
         <span class="pulse-warning">⚠️</span>
         <span id="reconnect-msg">Reconnecting to C++ Limit Order Book bridge...</span>
+        <div class="banner-actions">
+            <button id="btn-banner-retry" class="btn-banner" title="Retry WebSocket Connection Now">Retry Now</button>
+            <button id="btn-banner-standalone" class="btn-banner" title="Use In-Browser Standalone Ingestion Mode">Use Standalone Mode</button>
+            <button id="btn-banner-dismiss" class="btn-banner-close" title="Dismiss notification">&times;</button>
+        </div>
     </div>
 
     <!-- Main Workspace Grid -->
