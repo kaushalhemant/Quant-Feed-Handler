@@ -264,8 +264,20 @@ async def read_cpp_stdout_loop():
 
     while True:
         if cpp_process is None or cpp_process.poll() is not None:
-            await asyncio.sleep(0.1)
-            continue
+            if cpp_process and cpp_process.poll() is not None:
+                exit_code = cpp_process.poll()
+                logger.warning(f"C++ Engine terminated with exit code {exit_code}. Auto-restarting engine in 1s...")
+                await asyncio.sleep(1.0)
+                try:
+                    with process_lock:
+                        cpp_process = spawn_cpp_engine()
+                except Exception as e:
+                    logger.error(f"Failed to respawn C++ engine: {e}")
+                    await asyncio.sleep(2.0)
+                    continue
+            else:
+                await asyncio.sleep(0.1)
+                continue
 
         try:
             line = await loop.run_in_executor(None, cpp_process.stdout.readline)
