@@ -1,0 +1,24 @@
+@import "tailwindcss";
+
+@theme {
+  --color-tcg02-bg: #08070d;
+  --color-tcg02-bg: oklch(0.13 0.01 285);
+  --color-tcg02-tile: #0f0e18;
+  --color-tcg02-tile: oklch(0.17 0.02 285);
+  --color-tcg02-ink: #f5f5fa;
+  --color-tcg02-ink: oklch(0.97 0.004 285);
+  --color-tcg02-dim: #a3a3b8;
+  --color-tcg02-dim: oklch(0.73 0.02 285);
+  --font-tcg02-sans: 'Space Grotesk', system-ui, sans-serif;
+}
+
+/* Root rule: the full-bleed contract. */
+.tcg-02 {
+  width: 100%;
+  min-height: 100svh;
+}
+
+.tcg-02 ::selection {
+  background: #7c6af7;
+  color: #fff;
+}

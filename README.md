@@ -265,8 +265,11 @@ See [`CONFIG.md`](CONFIG.md) for full configuration specifications and schemas.
 │   ├── fuzz_parser.cpp         # Fuzzing target for parser injection defense
 │   └── test_bridge.py          # Python bridge security, rate limiting & WS tests
 └── web/                        # Production Web Dashboard
-    ├── index.html              # Accessible HTML5 UI with ARIA & live ladder
+    ├── index.html              # Accessible HTML5 UI with ARIA, live ladder & Features modal
+    ├── features.html           # Dedicated Asymmetric Bento Box Feature Grid showcase
     ├── style.css               # Responsive styling with Colorblind High-Contrast mode
+    ├── bento-grid.css          # Vanilla CSS compatibility module for Bento Grid
+    ├── bento-grid.tailwind.css # Tailwind CSS v4 @theme input specification
     └── app.js                  # Auto-reconnecting WebSocket engine & canvas visualizer
 ```
 

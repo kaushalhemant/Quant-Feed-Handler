@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QuantDesk Architecture & Features | Asymmetric Bento Grid</title>
+  <meta name="description" content="QuantDesk High-Frequency Trading Limit Order Book Engine Architecture and Features Showcase in Asymmetric Bento Grid">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Outfit:wght@500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="bento-grid.css">
+  <style>
+    /* Showcase Top Bar */
+    .showcase-header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: rgba(13, 17, 26, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-family: 'Outfit', sans-serif;
+      color: #e6edf3;
+    }
+    .showcase-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: inherit;
+    }
+    .showcase-badge {
+      background: rgba(0, 240, 255, 0.15);
+      color: #00f0ff;
+      border: 1px solid rgba(0, 240, 255, 0.3);
+      font-size: 0.75rem;
+      font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+      padding: 2px 8px;
+      border-radius: 4px;
+      letter-spacing: 0.05em;
+    }
+    .showcase-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .btn-nav {
+      background: #00f0ff;
+      color: #07090e;
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 700;
+      padding: 6px 16px;
+      border-radius: 6px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+      box-shadow: 0 0 12px rgba(0, 240, 255, 0.3);
+      border: none;
+      cursor: pointer;
+    }
+    .btn-nav:hover {
+      background: #33f3ff;
+      box-shadow: 0 0 20px rgba(0, 240, 255, 0.6);
+      transform: translateY(-1px);
+    }
+    .btn-secondary-nav {
+      background: rgba(255, 255, 255, 0.05);
+      color: #8b949e;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      font-size: 0.85rem;
+      font-weight: 600;
+      padding: 6px 14px;
+      border-radius: 6px;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+    .btn-secondary-nav:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+    }
+  </style>
+</head>
+<body style="margin: 0; background: var(--color-tcg02-bg, #08070d);">
+
+  <header class="showcase-header">
+    <a href="index.html" class="showcase-brand">
+      <span style="font-weight: 800; letter-spacing: -0.02em;">QUANT<span style="color: #00f0ff;">DESK</span></span>
+      <span class="showcase-badge">BENTO GRID</span>
+    </a>
+    <div class="showcase-actions">
+      <button id="btn-copy-code" class="btn-secondary-nav" onclick="copySnippet()">📋 Copy HTML</button>
+      <a href="index.html" class="btn-nav">⚡ Open LOB Terminal</a>
+    </div>
+  </header>
+
+  <!-- Bento Box Feature Grid Component (tcg-02) -->
+  <section class="tcg-02 w-full min-h-svh bg-tcg02-bg font-tcg02-sans text-tcg02-ink px-6 py-12" aria-label="Asymmetric bento box feature grid demo">
+    <div class="max-w-[1000px] mx-auto grid grid-cols-4 max-[640px]:grid-cols-2 [grid-auto-rows:140px] gap-4.5">
+
+      <article style="--glow:#7c6af7" class="col-span-2 row-span-2 max-[640px]:row-span-1 flex flex-col justify-end gap-2 p-6 rounded-[20px] border border-transparent [background:linear-gradient(#0f0e18,#0f0e18)_padding-box,linear-gradient(135deg,var(--glow),transparent_70%)_border-box] transition-[translate,box-shadow] duration-300 hover:-translate-y-[3px] hover:shadow-[0_0_0_1px_var(--glow),0_20px_40px_-20px_var(--glow)] motion-reduce:transition-none motion-reduce:hover:translate-y-0">
+        <div class="w-8.5 h-8.5 mb-1 rounded-[9px] opacity-90 bg-[var(--glow)]" aria-hidden="true"></div>
+        <h3 class="text-[1.4rem] font-bold tracking-[-0.01em]">Real-Time Sync Engine</h3>
+        <p class="mt-0.5 text-[.82rem] leading-[1.45] text-tcg02-dim text-pretty">Every change propagates across devices in under 80ms with conflict-free merge resolution.</p>
+      </article>
+
+      <article style="--glow:#00d4ff" class="col-span-2 max-[640px]:col-span-1 flex flex-col justify-end gap-2 p-6 rounded-[20px] border border-transparent [background:linear-gradient(#0f0e18,#0f0e18)_padding-box,linear-gradient(135deg,var(--glow),transparent_70%)_border-box] transition-[translate,box-shadow] duration-300 hover:-translate-y-[3px] hover:shadow-[0_0_0_1px_var(--glow),0_20px_40px_-20px_var(--glow)] motion-reduce:transition-none motion-reduce:hover:translate-y-0">
+        <div class="w-8.5 h-8.5 mb-1 rounded-[9px] opacity-90 bg-[var(--glow)]" aria-hidden="true"></div>
+        <h3 class="text-[1.05rem] font-bold tracking-[-0.01em]">Edge Caching</h3>
+        <p class="mt-0.5 text-[.82rem] leading-[1.45] text-tcg02-dim">Global CDN with smart invalidation.</p>
+      </article>
+
+      <article style="--glow:#ff6b9d" class="col-span-2 max-[640px]:col-span-1 flex flex-col justify-end gap-2 p-6 rounded-[20px] border border-transparent [background:linear-gradient(#0f0e18,#0f0e18)_padding-box,linear-gradient(135deg,var(--glow),transparent_70%)_border-box] transition-[translate,box-shadow] duration-300 hover:-translate-y-[3px] hover:shadow-[0_0_0_1px_var(--glow),0_20px_40px_-20px_var(--glow)] motion-reduce:transition-none motion-reduce:hover:translate-y-0">
+        <div class="w-8.5 h-8.5 mb-1 rounded-[9px] opacity-90 bg-[var(--glow)]" aria-hidden="true"></div>
+        <h3 class="text-[1.05rem] font-bold tracking-[-0.01em]">Zero-Config Auth</h3>
+        <p class="mt-0.5 text-[.82rem] leading-[1.45] text-tcg02-dim">Drop-in identity, fully managed.</p>
+      </article>
+
+      <article style="--glow:#ffd166" class="col-span-2 max-[640px]:col-span-1 flex flex-col justify-end gap-2 p-6 rounded-[20px] border border-transparent [background:linear-gradient(#0f0e18,#0f0e18)_padding-box,linear-gradient(135deg,var(--glow),transparent_70%)_border-box] transition-[translate,box-shadow] duration-300 hover:-translate-y-[3px] hover:shadow-[0_0_0_1px_var(--glow),0_20px_40px_-20px_var(--glow)] motion-reduce:transition-none motion-reduce:hover:translate-y-0">
+        <div class="w-8.5 h-8.5 mb-1 rounded-[9px] opacity-90 bg-[var(--glow)]" aria-hidden="true"></div>
+        <h3 class="text-[1.05rem] font-bold tracking-[-0.01em]">Usage Insights</h3>
+        <p class="mt-0.5 text-[.82rem] leading-[1.45] text-tcg02-dim">Live dashboards, no setup.</p>
+      </article>
+
+      <article style="--glow:#34d399" class="col-span-2 max-[640px]:col-span-1 flex flex-col justify-end gap-2 p-6 rounded-[20px] border border-transparent [background:linear-gradient(#0f0e18,#0f0e18)_padding-box,linear-gradient(135deg,var(--glow),transparent_70%)_border-box] transition-[translate,box-shadow] duration-300 hover:-translate-y-[3px] hover:shadow-[0_0_0_1px_var(--glow),0_20px_40px_-20px_var(--glow)] motion-reduce:transition-none motion-reduce:hover:translate-y-0">
+        <div class="w-8.5 h-8.5 mb-1 rounded-[9px] opacity-90 bg-[var(--glow)]" aria-hidden="true"></div>
+        <h3 class="text-[1.05rem] font-bold tracking-[-0.01em]">Type-Safe SDKs</h3>
+        <p class="mt-0.5 text-[.82rem] leading-[1.45] text-tcg02-dim">Generated clients for every stack.</p>
+      </article>
+
+    </div>
+  </section>
+
+  <script>
+    function copySnippet() {
+      const section = document.querySelector('section.tcg-02');
+      if (section && navigator.clipboard) {
+        navigator.clipboard.writeText(section.outerHTML).then(() => {
+          const btn = document.getElementById('btn-copy-code');
+          btn.textContent = '✅ Copied!';
+          setTimeout(() => { btn.textContent = '📋 Copy HTML'; }, 2000);
+        });
+      }
+    }
+  </script>
+</body>
+</html>

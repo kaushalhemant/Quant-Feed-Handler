@@ -116,6 +116,11 @@ class QuantDeskVisualizer {
         this.btnCopyToken = document.getElementById('btn-copy-token');
         this.stockSelector = document.getElementById('stock-selector');
         this.toastContainer = document.getElementById('toast-container');
+
+        // Bento Grid Modal
+        this.btnShowFeatures = document.getElementById('btn-show-features');
+        this.modalBentoFeatures = document.getElementById('modal-bento-features');
+        this.btnCloseBentoModal = document.getElementById('btn-close-bento-modal');
     }
 
     initCanvas() {
@@ -859,6 +864,30 @@ class QuantDeskVisualizer {
        Event Handlers & Form Bindings
        ========================================================================== */
     bindEvents() {
+        // Bento Features Modal Trigger
+        if (this.btnShowFeatures && this.modalBentoFeatures) {
+            this.btnShowFeatures.addEventListener('click', () => {
+                this.modalBentoFeatures.classList.remove('hidden');
+            });
+        }
+        if (this.btnCloseBentoModal && this.modalBentoFeatures) {
+            this.btnCloseBentoModal.addEventListener('click', () => {
+                this.modalBentoFeatures.classList.add('hidden');
+            });
+        }
+        if (this.modalBentoFeatures) {
+            this.modalBentoFeatures.addEventListener('click', (e) => {
+                if (e.target === this.modalBentoFeatures) {
+                    this.modalBentoFeatures.classList.add('hidden');
+                }
+            });
+            window.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && !this.modalBentoFeatures.classList.contains('hidden')) {
+                    this.modalBentoFeatures.classList.add('hidden');
+                }
+            });
+        }
+
         // Quick Demo Feed Button
         if (this.btnQuickDemo) {
             this.btnQuickDemo.addEventListener('click', () => {

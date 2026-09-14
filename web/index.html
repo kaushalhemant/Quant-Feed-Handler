@@ -7,8 +7,9 @@
     <meta name="description" content="Institutional HFT Market Data Feed Handler & Level 2 Limit Order Book Real-Time User Data Ingestion Visualizer">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&family=Outfit:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="bento-grid.css">
 </head>
 <body class="dark-theme">
     <!-- Floating Toast Notifications Container -->
@@ -53,6 +54,9 @@
         </div>
 
         <div class="header-actions">
+            <button id="btn-show-features" class="btn btn-outline" title="View QuantDesk Architecture & Features Bento Grid" aria-label="View Features Bento Grid">
+                <span class="btn-icon">✨</span> FEATURES
+            </button>
             <button id="btn-quick-demo" class="btn btn-primary btn-demo-pulse" title="Run live demo feed with active orders" aria-label="Run Demo Feed">
                 <span class="btn-icon">⚡</span> RUN DEMO FEED
             </button>
@@ -420,6 +424,59 @@
             <span id="live-clock">00:00:00.000 UTC</span>
         </div>
     </footer>
+
+    <!-- Bento Box Features Grid Modal (tcg-02) -->
+    <div id="modal-bento-features" class="bento-modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="modal-bento-title">
+        <div class="bento-modal-container">
+            <div class="bento-modal-header">
+                <div class="bento-modal-title-wrap">
+                    <span class="badge-hft">ARCHITECTURE & TECH STACK</span>
+                    <h2 id="modal-bento-title">QuantDesk Engine Features</h2>
+                </div>
+                <div class="bento-modal-actions">
+                    <a href="features.html" class="btn btn-sm btn-outline" target="_blank" rel="noopener" title="Open Fullscreen Showcase Page">Open Fullpage ↗</a>
+                    <button id="btn-close-bento-modal" class="btn-close-modal" aria-label="Close Features Modal">&times;</button>
+                </div>
+            </div>
+            <div class="bento-modal-body">
+                <section class="tcg-02 w-full min-h-svh bg-tcg02-bg font-tcg02-sans text-tcg02-ink px-6 py-12" aria-label="Asymmetric bento box feature grid demo">
+                  <div class="max-w-[1000px] mx-auto grid grid-cols-4 max-[640px]:grid-cols-2 [grid-auto-rows:140px] gap-4.5">
+
+                    <article style="--glow:#7c6af7" class="col-span-2 row-span-2 max-[640px]:row-span-1 flex flex-col justify-end gap-2 p-6 rounded-[20px] border border-transparent [background:linear-gradient(#0f0e18,#0f0e18)_padding-box,linear-gradient(135deg,var(--glow),transparent_70%)_border-box] transition-[translate,box-shadow] duration-300 hover:-translate-y-[3px] hover:shadow-[0_0_0_1px_var(--glow),0_20px_40px_-20px_var(--glow)] motion-reduce:transition-none motion-reduce:hover:translate-y-0">
+                      <div class="w-8.5 h-8.5 mb-1 rounded-[9px] opacity-90 bg-[var(--glow)]" aria-hidden="true"></div>
+                      <h3 class="text-[1.4rem] font-bold tracking-[-0.01em]">Real-Time Sync Engine</h3>
+                      <p class="mt-0.5 text-[.82rem] leading-[1.45] text-tcg02-dim text-pretty">Every change propagates across devices in under 80ms with conflict-free merge resolution.</p>
+                    </article>
+
+                    <article style="--glow:#00d4ff" class="col-span-2 max-[640px]:col-span-1 flex flex-col justify-end gap-2 p-6 rounded-[20px] border border-transparent [background:linear-gradient(#0f0e18,#0f0e18)_padding-box,linear-gradient(135deg,var(--glow),transparent_70%)_border-box] transition-[translate,box-shadow] duration-300 hover:-translate-y-[3px] hover:shadow-[0_0_0_1px_var(--glow),0_20px_40px_-20px_var(--glow)] motion-reduce:transition-none motion-reduce:hover:translate-y-0">
+                      <div class="w-8.5 h-8.5 mb-1 rounded-[9px] opacity-90 bg-[var(--glow)]" aria-hidden="true"></div>
+                      <h3 class="text-[1.05rem] font-bold tracking-[-0.01em]">Edge Caching</h3>
+                      <p class="mt-0.5 text-[.82rem] leading-[1.45] text-tcg02-dim">Global CDN with smart invalidation.</p>
+                    </article>
+
+                    <article style="--glow:#ff6b9d" class="col-span-2 max-[640px]:col-span-1 flex flex-col justify-end gap-2 p-6 rounded-[20px] border border-transparent [background:linear-gradient(#0f0e18,#0f0e18)_padding-box,linear-gradient(135deg,var(--glow),transparent_70%)_border-box] transition-[translate,box-shadow] duration-300 hover:-translate-y-[3px] hover:shadow-[0_0_0_1px_var(--glow),0_20px_40px_-20px_var(--glow)] motion-reduce:transition-none motion-reduce:hover:translate-y-0">
+                      <div class="w-8.5 h-8.5 mb-1 rounded-[9px] opacity-90 bg-[var(--glow)]" aria-hidden="true"></div>
+                      <h3 class="text-[1.05rem] font-bold tracking-[-0.01em]">Zero-Config Auth</h3>
+                      <p class="mt-0.5 text-[.82rem] leading-[1.45] text-tcg02-dim">Drop-in identity, fully managed.</p>
+                    </article>
+
+                    <article style="--glow:#ffd166" class="col-span-2 max-[640px]:col-span-1 flex flex-col justify-end gap-2 p-6 rounded-[20px] border border-transparent [background:linear-gradient(#0f0e18,#0f0e18)_padding-box,linear-gradient(135deg,var(--glow),transparent_70%)_border-box] transition-[translate,box-shadow] duration-300 hover:-translate-y-[3px] hover:shadow-[0_0_0_1px_var(--glow),0_20px_40px_-20px_var(--glow)] motion-reduce:transition-none motion-reduce:hover:translate-y-0">
+                      <div class="w-8.5 h-8.5 mb-1 rounded-[9px] opacity-90 bg-[var(--glow)]" aria-hidden="true"></div>
+                      <h3 class="text-[1.05rem] font-bold tracking-[-0.01em]">Usage Insights</h3>
+                      <p class="mt-0.5 text-[.82rem] leading-[1.45] text-tcg02-dim">Live dashboards, no setup.</p>
+                    </article>
+
+                    <article style="--glow:#34d399" class="col-span-2 max-[640px]:col-span-1 flex flex-col justify-end gap-2 p-6 rounded-[20px] border border-transparent [background:linear-gradient(#0f0e18,#0f0e18)_padding-box,linear-gradient(135deg,var(--glow),transparent_70%)_border-box] transition-[translate,box-shadow] duration-300 hover:-translate-y-[3px] hover:shadow-[0_0_0_1px_var(--glow),0_20px_40px_-20px_var(--glow)] motion-reduce:transition-none motion-reduce:hover:translate-y-0">
+                      <div class="w-8.5 h-8.5 mb-1 rounded-[9px] opacity-90 bg-[var(--glow)]" aria-hidden="true"></div>
+                      <h3 class="text-[1.05rem] font-bold tracking-[-0.01em]">Type-Safe SDKs</h3>
+                      <p class="mt-0.5 text-[.82rem] leading-[1.45] text-tcg02-dim">Generated clients for every stack.</p>
+                    </article>
+
+                  </div>
+                </section>
+            </div>
+        </div>
+    </div>
 
     <script src="app.js"></script>
 </body>
