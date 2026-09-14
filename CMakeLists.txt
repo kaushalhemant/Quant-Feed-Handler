@@ -28,6 +28,10 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
         -Wno-unused-parameter
     )
 
+    if (CMAKE_CXX_COMPILER_ID MATCHES "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 14)
+        add_compile_options(-Wno-error=constraints -fconcepts-diagnostics-depth=1)
+    endif()
+
     if (ENABLE_SANITIZERS)
         add_compile_options(-fsanitize=address,undefined -fno-omit-frame-pointer -g)
         add_link_options(-fsanitize=address,undefined)

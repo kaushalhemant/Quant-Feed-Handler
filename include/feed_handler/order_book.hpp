@@ -3,7 +3,6 @@
 #include "protocol.hpp"
 #include "order_table.hpp"
 #include <array>
-#include <algorithm>
 #include <cstdint>
 #include <cstdio>
 #include <utility>
