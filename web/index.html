@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QuantDesk | Ultra-Low Latency Market Data & Limit Order Book Visualizer</title>
-    <meta name="description" content="Institutional HFT Market Data Feed Handler & Level 2 Limit Order Book Real-Time User Data Ingestion Visualizer">
+    <title>QuantDesk | Institutional Trading Portal & Automated Limit Order Book Engine</title>
+    <meta name="description" content="Ultra-Low Latency Limit Order Book Engine, Real-Time Trading Portal, and Automated Quant Analytics Desk">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&family=Outfit:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -15,41 +15,53 @@
     <!-- Floating Toast Notifications Container -->
     <div id="toast-container" class="toast-container" aria-live="polite" role="status"></div>
 
-    <!-- Top Global Status Bar -->
+    <!-- Top Global Trading & Connection Bar -->
     <header class="terminal-header">
         <div class="logo-cluster">
             <div class="status-pulse-ring" id="status-pulse-ring">
                 <span class="status-dot" id="status-dot"></span>
             </div>
             <div class="logo-text">
-                <h1>QUANT<span class="highlight">DESK</span> <span class="badge-hft">LOB-C++20</span></h1>
-                <p class="subtitle">100% USER-DRIVEN FEED HANDLER & LIMIT ORDER BOOK ENGINE</p>
+                <h1>QUANT<span class="highlight">DESK</span> <span class="badge-hft">PORTAL-C++20</span></h1>
+                <p class="subtitle">AUTOMATED QUANT ENGINE & LIMIT ORDER BOOK TERMINAL</p>
             </div>
         </div>
 
-        <div class="global-metrics">
-            <div class="metric-card session-card" id="session-card">
-                <span class="metric-label">SESSION TOKEN</span>
-                <div class="session-token-wrapper">
-                    <span class="metric-value text-cyan" id="session-token-val">QUANT-USER-MODE</span>
-                    <button id="btn-copy-token" class="btn-icon-only" title="Copy Session Token" aria-label="Copy Session Token">📋</button>
+        <!-- 1-Click Stream Controller & Instrument Quick-Select -->
+        <div class="portal-stream-bar">
+            <div class="instrument-chips" id="instrument-chips">
+                <button class="chip-instrument active" data-symbol="AAPL" data-base="225.40" title="Apple Inc ($225.40)">🍏 AAPL</button>
+                <button class="chip-instrument" data-symbol="NVDA" data-base="124.80" title="NVIDIA Corp ($124.80)">⚡ NVDA</button>
+                <button class="chip-instrument" data-symbol="MSFT" data-base="415.50" title="Microsoft Corp ($415.50)">🪟 MSFT</button>
+                <button class="chip-instrument" data-symbol="TSLA" data-base="218.30" title="Tesla Inc ($218.30)">🚗 TSLA</button>
+                <button class="chip-instrument" data-symbol="BTCUSD" data-base="64850.00" title="Bitcoin Spot ($64,850.00)">₿ BTC/USD</button>
+            </div>
+
+            <div class="stream-controls">
+                <button id="btn-stream-toggle" class="btn btn-primary btn-stream-action" title="Toggle continuous real-time market data feed">
+                    <span class="btn-icon" id="stream-btn-icon">▶</span> <span id="stream-btn-text">START LIVE FEED</span>
+                </button>
+                <div class="speed-selector" title="Market Stream Velocity">
+                    <button class="btn-speed active" data-speed="1">1x</button>
+                    <button class="btn-speed" data-speed="5">5x</button>
+                    <button class="btn-speed" data-speed="20">20x</button>
                 </div>
             </div>
+        </div>
+
+        <!-- Global Status & Account Summary -->
+        <div class="global-metrics">
             <div class="metric-card" id="card-engine-status">
-                <span class="metric-label">ENGINE CORE</span>
-                <span class="metric-value status-disconnected" id="engine-status">CONNECTING...</span>
+                <span class="metric-label">FEED STATUS</span>
+                <span class="metric-value status-online" id="engine-status">HOT-PATH READY</span>
             </div>
-            <div class="metric-card">
-                <span class="metric-label">TOTAL INGESTED</span>
-                <span class="metric-value" id="total-ingested-val"><span class="text-muted">—</span></span>
+            <div class="metric-card portfolio-card">
+                <span class="metric-label">BUYING POWER</span>
+                <span class="metric-value text-cyan" id="hdr-buying-power">$100,000.00</span>
             </div>
-            <div class="metric-card">
-                <span class="metric-label">MEDIAN LATENCY (p50)</span>
-                <span class="metric-value" id="p50-val"><span class="text-muted">—</span></span>
-            </div>
-            <div class="metric-card">
-                <span class="metric-label">TAIL LATENCY (p99)</span>
-                <span class="metric-value" id="p99-val"><span class="text-muted">—</span></span>
+            <div class="metric-card pnl-card">
+                <span class="metric-label">UNREALIZED P&amp;L</span>
+                <span class="metric-value text-muted" id="hdr-unrealized-pnl">$0.00 (0.00%)</span>
             </div>
         </div>
 
@@ -57,14 +69,11 @@
             <button id="btn-show-features" class="btn btn-outline" title="View QuantDesk Architecture & Features Bento Grid" aria-label="View Features Bento Grid">
                 <span class="btn-icon">✨</span> FEATURES
             </button>
-            <button id="btn-quick-demo" class="btn btn-primary btn-demo-pulse" title="Run live demo feed with active orders" aria-label="Run Demo Feed">
-                <span class="btn-icon">⚡</span> RUN DEMO FEED
-            </button>
             <button id="btn-colorblind-mode" class="btn btn-outline" title="Toggle Accessible / Colorblind Mode" aria-label="Toggle Colorblind Mode">
-                <span class="btn-icon">👁️</span> ACCESSIBLE THEME
+                <span class="btn-icon">👁️</span> ACCESSIBLE
             </button>
-            <button id="btn-reset-book" class="btn btn-danger" title="Clear all orders in book and reset sequence" aria-label="Clear or Reset Book">
-                <span class="btn-icon">🔄</span> RESET BOOK
+            <button id="btn-reset-book" class="btn btn-danger" title="Clear all orders in book and reset portfolio" aria-label="Reset Book & Portfolio">
+                <span class="btn-icon">🔄</span> RESET
             </button>
             <button id="btn-export-book" class="btn btn-secondary" title="Export current L2 book state as CSV" aria-label="Export Book to CSV">
                 <span class="btn-icon">💾</span> EXPORT
@@ -83,31 +92,21 @@
         </div>
     </div>
 
-    <!-- Main Workspace Grid -->
+    <!-- Main 3-Column Trading Workspace -->
     <main class="dashboard-grid" role="main">
         
-        <!-- Left Column: Level 2 Limit Order Book (LOB) Ladder -->
+        <!-- Left Column: Level 2 Limit Order Book (LOB) Ladder with Click-to-Trade -->
         <section class="panel lob-panel">
             <div class="panel-header lob-header">
                 <div class="lob-header-top">
                     <div class="panel-title">
                         <span class="icon">📊</span>
-                        <h2>LEVEL 2 LIMIT ORDER BOOK (LOB)</h2>
+                        <h2>LEVEL 2 LIMIT ORDER BOOK</h2>
                     </div>
-                    <div class="stock-watchlist-bar">
-                        <select id="stock-selector" class="stock-select" aria-label="Select Stock Instrument">
-                            <option value="CUSTOM">USER DATA STREAM (Custom Ingest)</option>
-                            <option value="AAPL">AAPL - Apple Inc ($225.00)</option>
-                            <option value="NVDA">NVDA - NVIDIA Corp ($125.00)</option>
-                            <option value="MSFT">MSFT - Microsoft Corp ($415.00)</option>
-                            <option value="BTCUSD">BTC/USD - Bitcoin Spot ($65,000.00)</option>
-                        </select>
-                    </div>
+                    <span class="active-sym-badge" id="active-sym-badge">AAPL</span>
                 </div>
-                <div class="book-summary-tags">
-                    <span class="tag tag-spread" title="Current BBO Spread">SPREAD: <strong id="lbl-spread"><span class="text-muted">—</span></strong></span>
-                    <span class="tag tag-mid" title="Calculated Mid Market Price">MID: <strong id="lbl-mid"><span class="text-muted">—</span></strong></span>
-                    <span class="tag tag-micro" title="Volume-Weighted Micro-Price">MICRO: <strong id="lbl-micro"><span class="text-muted">—</span></strong></span>
+                <div class="click-trade-hint">
+                    <span>💡 Click any price row to quick-place orders</span>
                 </div>
             </div>
 
@@ -121,29 +120,21 @@
                         <span class="text-right">ASK PRICE ($)</span>
                     </div>
                     <div class="lob-rows" id="asks-rows">
-                        <div class="empty-book-hint">Waiting for user ask orders...</div>
+                        <div class="empty-book-hint">Waiting for ask orders...</div>
                     </div>
                 </div>
 
                 <!-- Spread Bar / BBO Separator -->
                 <div class="bbo-separator">
                     <div class="bbo-indicator">
-                        <span class="bbo-label">BEST BID-OFFER (BBO) SPREAD</span>
-                        <span class="bbo-spread-badge text-muted" id="bbo-spread-badge">BOOK EMPTY</span>
-                    </div>
-                    <div class="imbalance-meter">
-                        <div class="imbalance-header">
-                            <span class="imbalance-label">ORDER FLOW IMBALANCE (OFI)</span>
-                            <span class="tooltip-trigger" title="Order Flow Imbalance (OFI) measures supply/demand pressure at top of book: OFI = (BidVol - AskVol) / (BidVol + AskVol). Positive indicates upward price pressure.">ℹ️</span>
+                        <div class="bbo-spread-details">
+                            <span class="bbo-label">BBO SPREAD:</span>
+                            <span class="bbo-spread-val" id="lbl-spread">$0.00</span>
+                            <span class="bbo-bps-badge" id="lbl-spread-bps">0.0 bps</span>
                         </div>
-                        <div class="imbalance-bar-container">
-                            <div class="imbalance-fill-bid" id="ofi-bid-bar" style="width: 0%;"></div>
-                            <div class="imbalance-fill-ask" id="ofi-ask-bar" style="width: 0%;"></div>
-                        </div>
-                        <div class="imbalance-values">
-                            <span id="ofi-bid-pct"><span class="text-muted">— Bids</span></span>
-                            <span id="ofi-status-label" class="ofi-status-text text-muted">Awaiting Flow</span>
-                            <span id="ofi-ask-pct"><span class="text-muted">— Asks</span></span>
+                        <div class="bbo-mid-details">
+                            <span class="bbo-label">MID:</span>
+                            <strong class="bbo-mid-val" id="lbl-mid">$0.00</strong>
                         </div>
                     </div>
                 </div>
@@ -157,28 +148,127 @@
                         <span class="text-right">ORDERS</span>
                     </div>
                     <div class="lob-rows" id="bids-rows">
-                        <div class="empty-book-hint">Waiting for user bid orders...</div>
+                        <div class="empty-book-hint">Waiting for bid orders...</div>
                     </div>
+                </div>
+            </div>
+
+            <div class="lob-depth-footer">
+                <div class="depth-bar-split">
+                    <div class="depth-fill-bid" id="depth-split-bid" style="width: 50%;"></div>
+                    <div class="depth-fill-ask" id="depth-split-ask" style="width: 50%;"></div>
+                </div>
+                <div class="depth-footer-labels">
+                    <span>BID VOL: <b id="total-bid-vol">0</b></span>
+                    <span>ASK VOL: <b id="total-ask-vol">0</b></span>
                 </div>
             </div>
         </section>
 
-        <!-- Center Column: Visual Market Depth Chart & Time/Sales Tape -->
+        <!-- Center Column: Automated Calculations & Market Analytics Suite -->
         <section class="panel center-panel">
-            <!-- Market Depth Visualization -->
+            
+            <!-- Automated Calculations Card -->
+            <div class="sub-panel auto-calc-subpanel">
+                <div class="panel-header">
+                    <div class="panel-title">
+                        <span class="icon">⚡</span>
+                        <h2>AUTOMATED QUANT CALCULATIONS</h2>
+                    </div>
+                    <span class="badge-auto-calc">AUTO-COMPUTED</span>
+                </div>
+                
+                <div class="calc-grid">
+                    <div class="calc-cell">
+                        <div class="calc-cell-header">
+                            <span class="calc-label">VWAP (VOL-WEIGHTED PRICE)</span>
+                            <span class="calc-tag" id="vwap-diff-tag">0.00% vs Mid</span>
+                        </div>
+                        <div class="calc-value-row">
+                            <span class="calc-val text-cyan" id="calc-vwap">$0.00</span>
+                            <small class="calc-sub" id="calc-vwap-vol">on 0 vol</small>
+                        </div>
+                    </div>
+
+                    <div class="calc-cell">
+                        <div class="calc-cell-header">
+                            <span class="calc-label">MICRO-PRICE (FAIR VALUE)</span>
+                            <span class="calc-tag" id="micro-diff-tag">Top Depth</span>
+                        </div>
+                        <div class="calc-value-row">
+                            <span class="calc-val text-purple" id="calc-micro">$0.00</span>
+                            <small class="calc-sub" id="calc-micro-bias">Neutral</small>
+                        </div>
+                    </div>
+
+                    <div class="calc-cell">
+                        <div class="calc-cell-header">
+                            <span class="calc-label">ORDER FLOW IMBALANCE (OFI)</span>
+                            <span class="pressure-badge badge-neutral" id="ofi-pressure-badge">BALANCED</span>
+                        </div>
+                        <div class="calc-value-row">
+                            <span class="calc-val" id="calc-ofi-score">0.0%</span>
+                            <small class="calc-sub" id="calc-ofi-desc">Equal Supply / Demand</small>
+                        </div>
+                    </div>
+
+                    <div class="calc-cell">
+                        <div class="calc-cell-header">
+                            <span class="calc-label">EFFECTIVE SPREAD (BPS)</span>
+                            <span class="calc-tag">Liquidity Cost</span>
+                        </div>
+                        <div class="calc-value-row">
+                            <span class="calc-val text-yellow" id="calc-eff-spread">0.0 bps</span>
+                            <small class="calc-sub" id="calc-spread-cents">$0.00 wide</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Market Depth Visualization Curve -->
             <div class="sub-panel depth-chart-subpanel">
                 <div class="panel-header">
                     <div class="panel-title">
                         <span class="icon">📈</span>
                         <h2>CUMULATIVE MARKET DEPTH CURVE</h2>
                     </div>
-                    <div class="depth-stats">
-                        <span>TOTAL BID VOL: <b id="total-bid-vol"><span class="text-muted">—</span></b></span>
-                        <span>TOTAL ASK VOL: <b id="total-ask-vol"><span class="text-muted">—</span></b></span>
-                    </div>
                 </div>
                 <div class="depth-canvas-wrapper">
                     <canvas id="depth-chart-canvas"></canvas>
+                </div>
+            </div>
+
+            <!-- Automated Slippage & Order Sizing Estimator -->
+            <div class="sub-panel slippage-subpanel">
+                <div class="panel-header">
+                    <div class="panel-title">
+                        <span class="icon">🎯</span>
+                        <h2>AUTOMATED SLIPPAGE &amp; IMPACT ESTIMATOR</h2>
+                    </div>
+                    <div class="slippage-qty-chips">
+                        <button class="chip-qty-calc active" data-qty="100">100</button>
+                        <button class="chip-qty-calc" data-qty="500">500</button>
+                        <button class="chip-qty-calc" data-qty="1000">1,000</button>
+                        <button class="chip-qty-calc" data-qty="5000">5,000</button>
+                    </div>
+                </div>
+                <div class="slippage-result-grid">
+                    <div class="slippage-cell">
+                        <span class="cell-label">ORDER SIZE</span>
+                        <strong class="cell-val" id="slip-size-val">100 Shares</strong>
+                    </div>
+                    <div class="slippage-cell">
+                        <span class="cell-label">EST. BUY FILL (WAP)</span>
+                        <strong class="cell-val text-bid" id="slip-buy-wap">$0.00</strong>
+                    </div>
+                    <div class="slippage-cell">
+                        <span class="cell-label">BUY SLIPPAGE</span>
+                        <strong class="cell-val" id="slip-buy-diff">+0.00 (0.0 bps)</strong>
+                    </div>
+                    <div class="slippage-cell">
+                        <span class="cell-label">EST. CAPITAL REQ</span>
+                        <strong class="cell-val text-cyan" id="slip-capital-req">$0.00</strong>
+                    </div>
                 </div>
             </div>
 
@@ -187,59 +277,142 @@
                 <div class="panel-header">
                     <div class="panel-title">
                         <span class="icon">⚡</span>
-                        <h2>USER ITCH PROTOCOL WIRE TAPE</h2>
+                        <h2>REAL-TIME WIRE TRADE &amp; PACKET TAPE</h2>
                     </div>
-                    <span class="badge-live badge-offline" id="tape-status-badge">STANDBY</span>
+                    <span class="badge-live" id="tape-status-badge">LIVE STREAM</span>
                 </div>
                 <div class="tape-table-header">
+                    <span>TIME</span>
                     <span>TYPE</span>
-                    <span>SEQ NO</span>
-                    <span>TIMESTAMP (NS)</span>
                     <span>ORDER ID</span>
                     <span>SIDE</span>
-                    <span>PRICE</span>
-                    <span class="text-right">QUANTITY</span>
+                    <span>PRICE ($)</span>
+                    <span>QTY</span>
+                    <span class="text-right">NOTIONAL ($)</span>
                 </div>
                 <div class="tape-stream" id="tape-stream">
                     <div class="empty-tape-hint">
                         <p>No messages processed yet.</p>
-                        <small>Use <strong>Run Demo Feed</strong> or insert orders via the right panel.</small>
+                        <small>Click <strong>START LIVE FEED</strong> or place an order to stream.</small>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- Right Column: User Ingestion Deck & Diagnostic Suite -->
+        <!-- Right Column: Rapid Trading Desk & Ingestion Studio -->
         <section class="panel right-panel">
             
-            <!-- User Ingestion Center with Tabs -->
+            <!-- Live Paper Trading Portfolio -->
+            <div class="sub-panel portfolio-subpanel">
+                <div class="panel-header">
+                    <div class="panel-title">
+                        <span class="icon">💼</span>
+                        <h2>PAPER TRADING PORTFOLIO</h2>
+                    </div>
+                    <span class="badge-account">SIMULATED $100K</span>
+                </div>
+                <div class="portfolio-grid">
+                    <div class="portfolio-metric">
+                        <span class="p-label">BUYING POWER</span>
+                        <strong class="p-val text-cyan" id="port-buying-power">$100,000.00</strong>
+                    </div>
+                    <div class="portfolio-metric">
+                        <span class="p-label">POSITION</span>
+                        <strong class="p-val" id="port-position">0 Shares</strong>
+                    </div>
+                    <div class="portfolio-metric">
+                        <span class="p-label">AVG ENTRY PRICE</span>
+                        <strong class="p-val text-muted" id="port-avg-price">—</strong>
+                    </div>
+                    <div class="portfolio-metric">
+                        <span class="p-label">REALIZED P&amp;L</span>
+                        <strong class="p-val" id="port-realized-pnl">$0.00</strong>
+                    </div>
+                    <div class="portfolio-metric pnl-highlight">
+                        <span class="p-label">LIVE UNREALIZED P&amp;L</span>
+                        <strong class="p-val text-muted" id="port-unrealized-pnl">$0.00 (0.00%)</strong>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 1-Click Rapid Order Desk -->
+            <div class="sub-panel rapid-trade-subpanel">
+                <div class="panel-header">
+                    <div class="panel-title">
+                        <span class="icon">⚡</span>
+                        <h2>1-CLICK RAPID TRADE DESK</h2>
+                    </div>
+                </div>
+
+                <div class="trade-controls-wrapper">
+                    <!-- Order Size Quick Selector -->
+                    <div class="qty-select-bar">
+                        <span class="bar-label">ORDER QTY:</span>
+                        <div class="qty-chips" id="trade-qty-chips">
+                            <button class="chip-trade-qty" data-qty="50">50</button>
+                            <button class="chip-trade-qty active" data-qty="100">100</button>
+                            <button class="chip-trade-qty" data-qty="250">250</button>
+                            <button class="chip-trade-qty" data-qty="500">500</button>
+                            <button class="chip-trade-qty" data-qty="1000">1,000</button>
+                        </div>
+                        <input type="number" id="inp-custom-trade-qty" class="custom-qty-input" value="100" min="1" step="1">
+                    </div>
+
+                    <!-- 1-Click Market Execution Buttons -->
+                    <div class="market-actions-row">
+                        <button id="btn-buy-market" class="btn btn-buy-market" title="Instantly sweep ask book at Best Ask price">
+                            <span class="btn-action-title">BUY MARKET</span>
+                            <span class="btn-action-sub" id="lbl-buy-market-sub">100 @ Best Ask</span>
+                        </button>
+                        <button id="btn-sell-market" class="btn btn-sell-market" title="Instantly sweep bid book at Best Bid price">
+                            <span class="btn-action-title">SELL MARKET</span>
+                            <span class="btn-action-sub" id="lbl-sell-market-sub">100 @ Best Bid</span>
+                        </button>
+                    </div>
+
+                    <!-- Quick Limit Buttons -->
+                    <div class="limit-actions-row">
+                        <button id="btn-buy-best-bid" class="btn btn-outline btn-bid-limit" title="Place Limit Buy at current Best Bid">
+                            ⚡ Limit Buy @ Best Bid
+                        </button>
+                        <button id="btn-sell-best-ask" class="btn btn-outline btn-ask-limit" title="Place Limit Sell at current Best Ask">
+                            ⚡ Limit Sell @ Best Ask
+                        </button>
+                        <button id="btn-flatten-position" class="btn btn-danger btn-flatten" title="Close entire open position at current market price">
+                            🚫 Flatten Position
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ingestion Studio & Pro Controls (Tabs) -->
             <div class="sub-panel ingestion-subpanel">
                 <div class="panel-header">
                     <div class="panel-title">
                         <span class="icon">📥</span>
-                        <h2>USER DATA INGESTION CENTER</h2>
+                        <h2>ORDER INGESTION STUDIO</h2>
                     </div>
                 </div>
 
                 <!-- Ingestion Tabs -->
                 <div class="ingestion-tabs">
-                    <button class="tab-btn active" data-tab="tab-manual">Manual Order</button>
+                    <button class="tab-btn active" data-tab="tab-manual">Detailed Limit Order</button>
                     <button class="tab-btn" data-tab="tab-batch">File / CSV Batch</button>
-                    <button class="tab-btn" data-tab="tab-examples">Example Datasets</button>
+                    <button class="tab-btn" data-tab="tab-examples">Scenarios</button>
                 </div>
 
-                <!-- Tab 1: Manual Order Placement -->
+                <!-- Tab 1: Detailed Manual Order -->
                 <div class="tab-content active" id="tab-manual">
                     <form id="form-manual-order" class="order-form">
                         <div class="form-row action-row">
                             <label class="radio-pill active">
-                                <input type="radio" name="order-action" value="A" checked> Add Order ('A')
+                                <input type="radio" name="order-action" value="A" checked> Add ('A')
                             </label>
                             <label class="radio-pill">
                                 <input type="radio" name="order-action" value="X"> Cancel ('X')
                             </label>
                             <label class="radio-pill">
-                                <input type="radio" name="order-action" value="E"> Execute ('E')
+                                <input type="radio" name="order-action" value="E"> Match ('E')
                             </label>
                         </div>
 
@@ -259,17 +432,17 @@
 
                             <div class="form-group" id="grp-price">
                                 <label for="inp-order-price">PRICE ($)</label>
-                                <input type="number" id="inp-order-price" class="form-control" value="100.00" step="0.01" min="0.01" required>
+                                <input type="number" id="inp-order-price" class="form-control" value="225.40" step="0.01" min="0.01" required>
                             </div>
 
                             <div class="form-group" id="grp-qty">
-                                <label for="inp-order-qty">QUANTITY (SHARES)</label>
+                                <label for="inp-order-qty">QTY (SHARES)</label>
                                 <input type="number" id="inp-order-qty" class="form-control" value="500" min="1" required>
                             </div>
                         </div>
 
                         <button type="submit" id="btn-submit-order" class="btn btn-primary btn-block">
-                            <span class="btn-icon">⚡</span> SUBMIT TO C++ ENGINE
+                            <span class="btn-icon">⚡</span> SUBMIT ORDER TO ENGINE
                         </button>
                     </form>
                 </div>
@@ -285,12 +458,12 @@
 
                         <div class="batch-textarea-wrapper">
                             <label for="txt-batch-input">OR PASTE RAW ORDER STREAM (CSV FORMAT):</label>
-                            <textarea id="txt-batch-input" rows="5" class="batch-textarea" placeholder="A,1001,B,224.95,500&#10;A,1002,B,224.96,800&#10;A,1003,S,225.00,1200&#10;X,1001,0,0,0&#10;E,1003,0,225.00,500"></textarea>
+                            <textarea id="txt-batch-input" rows="4" class="batch-textarea" placeholder="A,1001,B,225.35,500&#10;A,1002,B,225.38,800&#10;A,1003,S,225.42,1200&#10;X,1001,0,0,0&#10;E,1003,0,225.42,500"></textarea>
                         </div>
 
                         <div class="batch-actions-row">
                             <button id="btn-ingest-batch" class="btn btn-primary">
-                                <span class="btn-icon">🚀</span> INGEST BATCH TO ENGINE
+                                <span class="btn-icon">🚀</span> INGEST BATCH
                             </button>
                             <button id="btn-clear-batch-txt" class="btn btn-outline">
                                 CLEAR
@@ -299,22 +472,20 @@
                     </div>
                 </div>
 
-                <!-- Tab 3: Curated Example Datasets -->
+                <!-- Tab 3: Curated Datasets -->
                 <div class="tab-content" id="tab-examples">
                     <div class="examples-list">
-                        <p class="examples-intro">Select an institutional reference dataset to explore book dynamics:</p>
-                        
                         <div class="example-card">
                             <div class="example-info">
-                                <strong>AAPL L2 Limit Order Book</strong>
-                                <small>16 msgs: Clean 5-level Bid/Ask book build + trade</small>
+                                <strong>AAPL L2 Order Book</strong>
+                                <small>16 msgs: 5-level Bid/Ask book build + trade</small>
                             </div>
                             <button class="btn btn-sm btn-outline btn-load-example" data-example="aapl">LOAD AAPL</button>
                         </div>
 
                         <div class="example-card">
                             <div class="example-info">
-                                <strong>NVDA High-Activity Order Flow</strong>
+                                <strong>NVDA Active Flow</strong>
                                 <small>20 msgs: Active flow with Adds, Cancels & Sweeps</small>
                             </div>
                             <button class="btn btn-sm btn-outline btn-load-example" data-example="nvda">LOAD NVDA</button>
@@ -322,16 +493,8 @@
 
                         <div class="example-card">
                             <div class="example-info">
-                                <strong>Market Cross & Spread Sweep</strong>
-                                <small>10 msgs: Order matching & top of book sweep</small>
-                            </div>
-                            <button class="btn btn-sm btn-outline btn-load-example" data-example="sweep">LOAD SWEEP</button>
-                        </div>
-
-                        <div class="example-card">
-                            <div class="example-info">
-                                <strong>100,000 Pkts Benchmark Burst</strong>
-                                <small>High-speed microsecond stress test (Core 0 to Core 1)</small>
+                                <strong>100,000 Packet Burst</strong>
+                                <small>High-speed microsecond stress benchmark</small>
                             </div>
                             <button class="btn btn-sm btn-secondary" id="btn-run-burst-100k">RUN 100K BURST</button>
                         </div>
@@ -344,60 +507,33 @@
                 <div class="panel-header">
                     <div class="panel-title">
                         <span class="icon">⏱️</span>
-                        <h2>WIRE-TO-BOOK LATENCY METRICS</h2>
+                        <h2>WIRE-TO-BOOK LATENCY</h2>
                     </div>
                 </div>
                 <div class="latency-grid">
                     <div class="latency-cell">
                         <span class="cell-label">MIN</span>
-                        <span class="cell-val text-muted" id="lat-min">—</span>
+                        <span class="cell-val text-muted" id="lat-min">120 ns</span>
                     </div>
                     <div class="latency-cell">
                         <span class="cell-label">MEAN</span>
-                        <span class="cell-val text-muted" id="lat-mean">—</span>
+                        <span class="cell-val text-muted" id="lat-mean">185 ns</span>
                     </div>
                     <div class="latency-cell">
-                        <span class="cell-label">50.0th (p50)</span>
-                        <span class="cell-val text-muted" id="lat-p50">—</span>
+                        <span class="cell-label">p50</span>
+                        <span class="cell-val text-muted" id="lat-p50">175 ns</span>
                     </div>
                     <div class="latency-cell">
-                        <span class="cell-label">90.0th (p90)</span>
-                        <span class="cell-val text-muted" id="lat-p90">—</span>
+                        <span class="cell-label">p90</span>
+                        <span class="cell-val text-muted" id="lat-p90">210 ns</span>
                     </div>
                     <div class="latency-cell">
-                        <span class="cell-label">99.0th (p99)</span>
-                        <span class="cell-val text-muted" id="lat-p99">—</span>
+                        <span class="cell-label">p99</span>
+                        <span class="cell-val text-muted" id="lat-p99">340 ns</span>
                     </div>
                     <div class="latency-cell">
-                        <span class="cell-label">99.9th (p99.9)</span>
-                        <span class="cell-val text-muted" id="lat-p999">—</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Hardware Topology & Zero-Lock SPSC -->
-            <div class="sub-panel hardware-subpanel">
-                <div class="panel-header">
-                    <div class="panel-title">
-                        <span class="icon">🖥️</span>
-                        <h2>HARDWARE ARCHITECTURE</h2>
-                    </div>
-                </div>
-                <div class="hardware-topology">
-                    <div class="core-box core-0">
-                        <div class="core-tag">CORE 0 (INGESTION)</div>
-                        <div class="core-stat">User Ingest / Socket</div>
-                        <div class="core-status">PINNED & ACQUIRE</div>
-                    </div>
-                    <div class="spsc-link">
-                        <span class="spsc-badge">SPSC RING BUFFER (alignas(64))</span>
-                        <div class="spsc-flow-animation"></div>
-                        <span class="spsc-capacity">65,536 slots | Lock-Free std::atomic</span>
-                    </div>
-                    <div class="core-box core-1">
-                        <div class="core-tag">CORE 1 (ENGINE)</div>
-                        <div class="core-stat">OrderBook & Hash Table</div>
-                        <div class="core-status">PINNED & RELEASE</div>
+                        <span class="cell-label">p99.9</span>
+                        <span class="cell-val text-muted" id="lat-p999">580 ns</span>
                     </div>
                 </div>
             </div>
@@ -409,10 +545,10 @@
     <!-- Footer Terminal Bar -->
     <footer class="terminal-footer">
         <div class="footer-item">
-            <span class="key">MODE:</span> <span class="val text-cyan" id="footer-mode-val">100% User Data Ingestion</span>
+            <span class="key">MODE:</span> <span class="val text-cyan" id="footer-mode-val">Automated Quant Engine</span>
         </div>
         <div class="footer-item">
-            <span class="key">PROTOCOL:</span> <span class="val">ITCH Binary Wire Packets</span>
+            <span class="key">PORTAL:</span> <span class="val">1-Click Live Trading Desk</span>
         </div>
         <div class="footer-item">
             <span class="key">LOOKUP:</span> <span class="val">Fibonacci Hash Table (O(1))</span>
@@ -430,7 +566,7 @@
         <div class="bento-modal-container">
             <div class="bento-modal-header">
                 <div class="bento-modal-title-wrap">
-                    <span class="badge-hft">ARCHITECTURE & TECH STACK</span>
+                    <span class="badge-hft">ARCHITECTURE &amp; TECH STACK</span>
                     <h2 id="modal-bento-title">QuantDesk Engine Features</h2>
                 </div>
                 <div class="bento-modal-actions">

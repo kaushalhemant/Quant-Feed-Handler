@@ -1513,3 +1513,568 @@ body.colorblind-theme {
     padding: 12px 0;
 }
 
+/* ==========================================================================
+   Re-Engineered 1-Click Trading Portal & Stream Bar
+   ========================================================================== */
+.portal-stream-bar {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.instrument-chips {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--bg-subpanel);
+    padding: 3px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-subtle);
+}
+
+.chip-instrument {
+    background: transparent;
+    color: var(--text-secondary);
+    border: 1px solid transparent;
+    padding: 4px 10px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 700;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.chip-instrument:hover {
+    color: var(--text-primary);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.chip-instrument.active {
+    background: rgba(0, 240, 255, 0.15);
+    color: var(--color-cyan);
+    border-color: rgba(0, 240, 255, 0.4);
+    box-shadow: 0 0 10px rgba(0, 240, 255, 0.25);
+}
+
+.stream-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-stream-action {
+    font-weight: 700 !important;
+    letter-spacing: 0.5px;
+    box-shadow: 0 0 12px rgba(0, 240, 255, 0.3);
+}
+
+.btn-stream-action.streaming-active {
+    background: rgba(0, 230, 118, 0.2) !important;
+    color: var(--color-bid) !important;
+    border-color: rgba(0, 230, 118, 0.6) !important;
+    box-shadow: 0 0 16px rgba(0, 230, 118, 0.4) !important;
+    animation: streamPulse 2s infinite ease-in-out;
+}
+
+@keyframes streamPulse {
+    0%, 100% { box-shadow: 0 0 8px rgba(0, 230, 118, 0.3); }
+    50% { box-shadow: 0 0 20px rgba(0, 230, 118, 0.6); }
+}
+
+.speed-selector {
+    display: flex;
+    background: var(--bg-subpanel);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-sm);
+    padding: 2px;
+}
+
+.btn-speed {
+    background: transparent;
+    color: var(--text-muted);
+    border: none;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.btn-speed:hover {
+    color: var(--text-primary);
+}
+
+.btn-speed.active {
+    background: rgba(0, 240, 255, 0.2);
+    color: var(--color-cyan);
+}
+
+.active-sym-badge {
+    background: rgba(0, 240, 255, 0.15);
+    color: var(--color-cyan);
+    border: 1px solid rgba(0, 240, 255, 0.3);
+    font-size: 11px;
+    font-weight: 800;
+    font-family: var(--font-mono);
+    padding: 2px 8px;
+    border-radius: var(--radius-sm);
+}
+
+.click-trade-hint {
+    padding: 2px 0 0 0;
+    font-size: 10px;
+    color: var(--text-muted);
+}
+
+/* BBO spread details */
+.bbo-spread-details, .bbo-mid-details {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.bbo-spread-val {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--color-yellow);
+}
+
+.bbo-bps-badge {
+    font-size: 10px;
+    font-weight: 700;
+    background: rgba(255, 214, 0, 0.15);
+    color: var(--color-yellow);
+    border: 1px solid rgba(255, 214, 0, 0.3);
+    padding: 1px 5px;
+    border-radius: 3px;
+}
+
+.bbo-mid-val {
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--color-cyan);
+}
+
+/* Depth footer */
+.lob-depth-footer {
+    padding: 8px 12px;
+    background: var(--bg-subpanel);
+    border-top: 1px solid var(--border-subtle);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.depth-bar-split {
+    display: flex;
+    height: 6px;
+    border-radius: 3px;
+    overflow: hidden;
+    background: var(--bg-main);
+}
+
+.depth-fill-bid {
+    background: var(--color-bid);
+    transition: width 0.2s ease;
+}
+
+.depth-fill-ask {
+    background: var(--color-ask);
+    transition: width 0.2s ease;
+}
+
+.depth-footer-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 10px;
+    color: var(--text-secondary);
+}
+
+.depth-footer-labels b {
+    color: var(--text-primary);
+}
+
+/* ==========================================================================
+   Automated Quant Calculations Grid
+   ========================================================================== */
+.badge-auto-calc {
+    background: rgba(0, 240, 255, 0.1);
+    color: var(--color-cyan);
+    border: 1px solid rgba(0, 240, 255, 0.3);
+    font-size: 9px;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: var(--radius-sm);
+    letter-spacing: 0.5px;
+}
+
+.calc-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    padding: 10px;
+}
+
+.calc-cell {
+    background: var(--bg-main);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-sm);
+    padding: 8px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    transition: border-color 0.2s;
+}
+
+.calc-cell:hover {
+    border-color: rgba(0, 240, 255, 0.25);
+}
+
+.calc-cell-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.calc-label {
+    font-size: 9px;
+    font-weight: 700;
+    color: var(--text-muted);
+    letter-spacing: 0.4px;
+}
+
+.calc-tag {
+    font-size: 9px;
+    color: var(--text-secondary);
+    background: var(--bg-subpanel);
+    padding: 1px 4px;
+    border-radius: 2px;
+}
+
+.calc-value-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 6px;
+}
+
+.calc-val {
+    font-size: 15px;
+    font-weight: 800;
+    color: #ffffff;
+}
+
+.calc-sub {
+    font-size: 10px;
+    color: var(--text-muted);
+}
+
+.pressure-badge {
+    font-size: 9px;
+    font-weight: 700;
+    padding: 1px 6px;
+    border-radius: 3px;
+    letter-spacing: 0.5px;
+}
+
+.badge-bullish {
+    background: rgba(0, 230, 118, 0.15);
+    color: var(--color-bid);
+    border: 1px solid rgba(0, 230, 118, 0.4);
+}
+
+.badge-bearish {
+    background: rgba(255, 51, 102, 0.15);
+    color: var(--color-ask);
+    border: 1px solid rgba(255, 51, 102, 0.4);
+}
+
+.badge-neutral {
+    background: rgba(0, 240, 255, 0.1);
+    color: var(--color-cyan);
+    border: 1px solid rgba(0, 240, 255, 0.3);
+}
+
+/* ==========================================================================
+   Automated Slippage & Impact Estimator
+   ========================================================================== */
+.slippage-subpanel {
+    border-top: 1px solid var(--border-subtle);
+}
+
+.slippage-qty-chips {
+    display: flex;
+    gap: 4px;
+}
+
+.chip-qty-calc {
+    background: var(--bg-main);
+    color: var(--text-secondary);
+    border: 1px solid var(--border-subtle);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+
+.chip-qty-calc:hover {
+    color: var(--text-primary);
+}
+
+.chip-qty-calc.active {
+    background: rgba(0, 240, 255, 0.15);
+    color: var(--color-cyan);
+    border-color: rgba(0, 240, 255, 0.4);
+}
+
+.slippage-result-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+    padding: 8px 10px;
+    background: var(--bg-main);
+}
+
+.slippage-cell {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.slippage-cell .cell-label {
+    font-size: 8px;
+    color: var(--text-muted);
+    font-weight: 700;
+}
+
+.slippage-cell .cell-val {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+/* ==========================================================================
+   Paper Trading Portfolio
+   ========================================================================== */
+.badge-account {
+    font-size: 9px;
+    font-weight: 700;
+    background: rgba(179, 136, 255, 0.15);
+    color: var(--color-purple);
+    border: 1px solid rgba(179, 136, 255, 0.3);
+    padding: 2px 6px;
+    border-radius: var(--radius-sm);
+}
+
+.portfolio-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 6px;
+    padding: 10px;
+    background: var(--bg-main);
+}
+
+.portfolio-metric {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    background: var(--bg-subpanel);
+    padding: 6px 8px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-subtle);
+}
+
+.portfolio-metric .p-label {
+    font-size: 8px;
+    color: var(--text-muted);
+    font-weight: 700;
+}
+
+.portfolio-metric .p-val {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.portfolio-metric.pnl-highlight {
+    grid-column: span 2;
+    background: rgba(0, 240, 255, 0.05);
+    border-color: rgba(0, 240, 255, 0.2);
+}
+
+.pnl-positive {
+    color: var(--color-bid) !important;
+    text-shadow: 0 0 8px rgba(0, 230, 118, 0.4);
+}
+
+.pnl-negative {
+    color: var(--color-ask) !important;
+    text-shadow: 0 0 8px rgba(255, 51, 102, 0.4);
+}
+
+/* ==========================================================================
+   1-Click Rapid Trade Desk
+   ========================================================================== */
+.trade-controls-wrapper {
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    background: var(--bg-main);
+}
+
+.qty-select-bar {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.qty-select-bar .bar-label {
+    font-size: 9px;
+    font-weight: 700;
+    color: var(--text-muted);
+}
+
+.qty-chips {
+    display: flex;
+    gap: 4px;
+}
+
+.chip-trade-qty {
+    background: var(--bg-subpanel);
+    color: var(--text-secondary);
+    border: 1px solid var(--border-subtle);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 700;
+    padding: 3px 6px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all 0.15s;
+}
+
+.chip-trade-qty:hover {
+    color: var(--text-primary);
+}
+
+.chip-trade-qty.active {
+    background: rgba(0, 240, 255, 0.15);
+    color: var(--color-cyan);
+    border-color: rgba(0, 240, 255, 0.4);
+}
+
+.custom-qty-input {
+    width: 65px;
+    background: var(--bg-subpanel);
+    color: var(--color-cyan);
+    border: 1px solid var(--border-subtle);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 6px;
+    border-radius: var(--radius-sm);
+    text-align: right;
+    outline: none;
+}
+
+.market-actions-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+
+.btn-buy-market {
+    background: rgba(0, 230, 118, 0.2);
+    color: #ffffff;
+    border: 1px solid rgba(0, 230, 118, 0.6);
+    padding: 10px 8px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    transition: all 0.2s;
+    box-shadow: 0 0 12px rgba(0, 230, 118, 0.2);
+}
+
+.btn-buy-market:hover {
+    background: rgba(0, 230, 118, 0.35);
+    box-shadow: 0 0 20px rgba(0, 230, 118, 0.4);
+    transform: translateY(-1px);
+}
+
+.btn-buy-market .btn-action-title {
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--color-bid);
+}
+
+.btn-buy-market .btn-action-sub {
+    font-size: 9px;
+    color: #ccffdd;
+}
+
+.btn-sell-market {
+    background: rgba(255, 51, 102, 0.2);
+    color: #ffffff;
+    border: 1px solid rgba(255, 51, 102, 0.6);
+    padding: 10px 8px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    transition: all 0.2s;
+    box-shadow: 0 0 12px rgba(255, 51, 102, 0.2);
+}
+
+.btn-sell-market:hover {
+    background: rgba(255, 51, 102, 0.35);
+    box-shadow: 0 0 20px rgba(255, 51, 102, 0.4);
+    transform: translateY(-1px);
+}
+
+.btn-sell-market .btn-action-title {
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--color-ask);
+}
+
+.btn-sell-market .btn-action-sub {
+    font-size: 9px;
+    color: #ffccd5;
+}
+
+.limit-actions-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 6px;
+}
+
+.btn-bid-limit, .btn-ask-limit, .btn-flatten {
+    padding: 5px 6px;
+    font-size: 9px;
+    justify-content: center;
+}
+
+.btn-bid-limit:hover {
+    border-color: var(--color-bid);
+    color: var(--color-bid);
+}
+
+.btn-ask-limit:hover {
+    border-color: var(--color-ask);
+    color: var(--color-ask);
+}
+
